@@ -248,3 +248,15 @@
   document.addEventListener('DOMContentLoaded',run);
   if(window.MutationObserver){ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true}); }
 })();
+
+/* HM-FIX-LINKS: footer logo index.html -> / and remove hidden loyalty popup (2026-11-09) */
+(function(){
+  function fixLinks(){
+    document.querySelectorAll('a[href="index.html"],a[href$="/index.html"]').forEach(function(a){ a.setAttribute('href','/'); });
+    document.querySelectorAll('.loyalty-rewards-popup').forEach(function(p){ p.remove(); });
+    document.querySelectorAll('a[href*="loyalty-program-info"]').forEach(function(a){ a.remove(); });
+  }
+  if(document.readyState!=='loading') fixLinks(); else document.addEventListener('DOMContentLoaded',fixLinks);
+  window.addEventListener('load',fixLinks);
+  setTimeout(fixLinks,3000);
+})();
