@@ -260,3 +260,26 @@
   window.addEventListener('load',fixLinks);
   setTimeout(fixLinks,3000);
 })();
+
+/* MN-CSS-SYNC 2026-11-10: زد يقدّم لصفحات /products والفرص والتصنيفات والصفحات الداخلية نسخة قديمة مجمّدة من «كود CSS الخاص».
+   هذا الجزء ينسخ CSS المنشور من الرئيسية (المصدر الوحيد: سجل CSS في محرر الثيم) ويضيفه للصفحة إن كان ناقصًا. يُحفظ في المتصفح ساعة. */
+(function(){
+  var MARK='MN-CARD-LIKE-OLD', KEY='mn_css_sync_v1', TTL=3600000;
+  function hasCurrent(){ var s=document.querySelectorAll('style'); for(var i=0;i<s.length;i++){ if(s[i].id!=='mn-css-sync' && s[i].textContent.indexOf(MARK)>-1) return true; } return false; }
+  function apply(css){ if(!css) return; var el=document.getElementById('mn-css-sync'); if(!el){ el=document.createElement('style'); el.id='mn-css-sync'; } if(el.textContent!==css) el.textContent=css; (document.head||document.documentElement).appendChild(el); }
+  function read(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
+  function save(css){ try{ localStorage.setItem(KEY, JSON.stringify({t:Date.now(), css:css})); }catch(e){} }
+  function refresh(){
+    fetch('/', {credentials:'same-origin', cache:'no-store'}).then(function(r){ return r.text(); }).then(function(html){
+      var re=/<style[^>]*>([\s\S]*?)<\/style>/g, m;
+      while((m=re.exec(html))){ if(m[1].indexOf(MARK)>-1){ save(m[1]); if(!hasCurrent()) apply(m[1]); return; } }
+    }).catch(function(){});
+  }
+  function run(){
+    if(hasCurrent()) return;
+    var c=read();
+    if(c && c.css) apply(c.css);
+    if(!c || !c.css || (Date.now()-c.t)>TTL) refresh();
+  }
+  if(document.head && document.querySelector('style')) run(); else document.addEventListener('DOMContentLoaded', run);
+})();
