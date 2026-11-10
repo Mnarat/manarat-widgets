@@ -283,3 +283,143 @@
   }
   if(document.head && document.querySelector('style')) run(); else document.addEventListener('DOMContentLoaded', run);
 })();
+/* ============================================================
+   MN-RAMADAN-COUNTDOWN — عداد رمضان 1448 (منارات فقط). أُضيف 2026-11-10.
+   - الرئيسية: عداد كبير تحت السلايدر.
+   - صفحات المشاريع: شريط رفيع في نهاية صفحة المشروع، بعد قسم المشروع وقبل الفوتر، وزره ينقل إلى «جاهز لرمضان».
+     في صفحة «جاهز لرمضان» نفسها يُخفى الزر.
+   - أبيض من شروق الشمس إلى غروبها في مكة، وكحلي في الليل.
+   - زر «مشاركة» في عداد الرئيسية فقط، والرابط المُرسل يفتح الرئيسية وينزل إلى العداد (#ramadan).
+   - يختفي تلقائيًا مع دخول رمضان (8 فبراير 2027، 00:00 بتوقيت السعودية).
+   - تعديل 2026-11-10 بعد التجربة الحية: (1) المحدِّد productBefore صار #nt_footer لأن شريط التواصل غير موجود في المتجر الحي،
+     (2) الشاشات الكبيرة: النص والأرقام متجاوران في الوسط بدل الحافتين، (3) العرض 1366 ليطابق بطاقات الفرص.
+   ============================================================ */
+(function(){
+  'use strict';
+  if (window.__mnRamadanCountdown) return; window.__mnRamadanCountdown = 1;
+
+  var CFG = {
+    target: Date.UTC(2027, 1, 7, 21, 0, 0),      /* 1 رمضان 1448 = الاثنين 8 فبراير 2027، 00:00 بتوقيت السعودية */
+    link: '/products/ramadan-ready',
+    homeAfter: '.type_slideshow',                 /* العداد الكبير يُدرج بعد هذا العنصر في الرئيسية */
+    productBefore: '#nt_footer',                  /* الشريط يُدرج قبل الفوتر، أي بعد قسم المشروع */
+    skipPaths: ['/cart','/checkout','/payment','/thank','/orders','/account','/auth']
+  };
+  if (Date.now() >= CFG.target) return;
+
+  var path = location.pathname.replace(/\/+$/,'') || '/';
+  if (CFG.skipPaths.some(function(s){ return path.indexOf(s) === 0; })) return;
+  var isHome = path === '/';
+  var isProduct = /^\/products\/[^\/]+$/.test(path);
+  if (!isHome && !isProduct) return;
+  var isRamadanProject = path === CFG.link;
+
+  var CSS = ".mn-rc{--navy:#052560;--teal:#00b5a7;--teal-dark:#008F85;--mint:#EAF8F7;--mint-line:#CFEDEA;--ink:#0F1F19;--muted:#4B5B54;--font:\"Almarai\",\"Tajawal\",\"Segoe UI\",Tahoma,sans-serif;container-type:inline-size;font-family:var(--font);direction:rtl;line-height:1.7}.mn-rc *{box-sizing:border-box}.mn-rc-box{position:relative;overflow:hidden;border-radius:18px;padding:30px 34px;display:grid;grid-template-columns:auto auto;justify-content:center;align-items:center;gap:22px clamp(48px,9cqi,120px)}.mn-rc-moon{position:absolute;inset-inline-end:-40px;top:-50px;width:230px;height:230px;opacity:.12;pointer-events:none}.mn-rc-text,.mn-rc-side{position:relative}.mn-rc-eyebrow{font-size:.9rem;font-weight:700;margin:0 0 4px}.mn-rc-title{font-size:clamp(1.5rem,3.2cqi,2.1rem);font-weight:800;line-height:1.3;margin:0 0 6px}.mn-rc-sub{margin:0 0 16px;font-size:1rem;line-height:1.7;max-width:46ch}.mn-rc-dates{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 4px;padding:0;list-style:none}.mn-rc-dates li{border-radius:30px;padding:5px 14px;font-size:.88rem;font-weight:700}.mn-rc-hint{font-size:.78rem;margin:8px 0 0}.mn-rc-side{display:flex;flex-direction:column;gap:14px;align-items:stretch}.mn-rc-tiles{display:grid;grid-template-columns:repeat(4,minmax(74px,1fr));gap:10px}.mn-rc-tile{border-radius:14px;padding:12px 6px 10px;text-align:center}.mn-rc-num{display:block;font-size:clamp(1.7rem,4.2cqi,2.6rem);font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;direction:ltr}.mn-rc-lbl{display:block;font-size:.85rem;font-weight:700;margin-top:2px}.mn-rc-cta{display:flex;align-items:center;justify-content:center;min-height:50px;border-radius:30px;padding:0 26px;font-size:1.05rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:background .2s,color .2s}.mn-rc-cta:focus-visible{outline:3px solid var(--teal);outline-offset:3px}.mn-rc--navy .mn-rc-box{background:var(--navy)}.mn-rc--navy .mn-rc-moon{color:var(--teal)}.mn-rc--navy .mn-rc-eyebrow{color:var(--teal)}.mn-rc--navy .mn-rc-title{color:#fff}.mn-rc--navy .mn-rc-sub{color:#E3E9F5}.mn-rc--navy .mn-rc-hint{color:#C3CEE4}.mn-rc--navy .mn-rc-dates li{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff}.mn-rc--navy .mn-rc-tile{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}.mn-rc--navy .mn-rc-num{color:#fff}.mn-rc--navy .mn-rc-lbl{color:var(--teal)}.mn-rc--navy .mn-rc-cta{background:var(--teal);color:var(--navy)}.mn-rc--navy .mn-rc-cta:hover{background:#fff;color:var(--navy)}.mn-rc--white .mn-rc-box{background:#fff;border:1.5px solid var(--mint-line)}.mn-rc--white .mn-rc-moon{color:var(--teal);opacity:.14}.mn-rc--white .mn-rc-eyebrow{color:var(--teal-dark)}.mn-rc--white .mn-rc-title{color:var(--navy)}.mn-rc--white .mn-rc-sub{color:var(--ink)}.mn-rc--white .mn-rc-hint{color:var(--muted)}.mn-rc--white .mn-rc-dates li{background:var(--mint);border:1px solid var(--mint-line);color:var(--navy)}.mn-rc--white .mn-rc-tile{background:var(--navy)}.mn-rc--white .mn-rc-num{color:#fff}.mn-rc--white .mn-rc-lbl{color:#7FE3DB}.mn-rc--white .mn-rc-cta{background:var(--navy);color:#fff}.mn-rc--white .mn-rc-cta:hover{background:var(--teal-dark);color:#fff}.mn-rc--bar .mn-rc-box{background:var(--navy);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;padding:14px 22px;gap:12px 48px}.mn-rc--bar .mn-rc-moon{position:static;width:30px;height:30px;opacity:1;color:var(--teal);flex:0 0 30px}.mn-rc--bar .mn-rc-text{flex:0 1 auto}.mn-rc--bar .mn-rc-title{color:#fff;font-size:1.2rem;margin:0}.mn-rc--bar .mn-rc-eyebrow,.mn-rc--bar .mn-rc-sub,.mn-rc--bar .mn-rc-dates,.mn-rc--bar .mn-rc-hint{display:none}.mn-rc--bar .mn-rc-side{flex-direction:row;align-items:center;gap:16px}.mn-rc--bar .mn-rc-tiles{display:flex;gap:8px}.mn-rc--bar .mn-rc-tile{display:flex;align-items:baseline;gap:5px;padding:5px 12px;border-radius:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}.mn-rc--bar .mn-rc-num{font-size:1.25rem;color:#fff}.mn-rc--bar .mn-rc-lbl{font-size:.8rem;margin:0;color:var(--teal)}.mn-rc--bar .mn-rc-cta{min-height:42px;font-size:.95rem;padding:0 20px;background:var(--teal);color:var(--navy)}.mn-rc--bar .mn-rc-cta:hover{background:#fff;color:var(--navy)}.mn-rc--bar.mn-rc--white .mn-rc-box{background:#fff;border:1.5px solid var(--mint-line)}.mn-rc--bar.mn-rc--white .mn-rc-moon{color:var(--teal-dark);opacity:1}.mn-rc--bar.mn-rc--white .mn-rc-title{color:var(--navy)}.mn-rc--bar.mn-rc--white .mn-rc-tile{background:var(--mint);border:1px solid var(--mint-line)}.mn-rc--bar.mn-rc--white .mn-rc-num{color:var(--navy)}.mn-rc--bar.mn-rc--white .mn-rc-lbl{color:var(--teal-dark)}.mn-rc--bar.mn-rc--white .mn-rc-cta{background:var(--navy)}.mn-rc--bar.mn-rc--white .mn-rc-cta:hover{background:var(--teal-dark)}.mn-rc-actions{display:flex;gap:8px;align-items:stretch}.mn-rc-actions .mn-rc-cta{flex:1 1 auto}.mn-rc .mn-rc-share{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:50px;width:auto;min-width:0;margin:0;padding:0 18px!important;border-radius:30px!important;border:1.5px solid currentColor!important;background:transparent!important;box-shadow:none!important;font-family:inherit;font-size:.95rem!important;font-weight:700!important;line-height:1;cursor:pointer}.mn-rc-share svg{width:18px;height:18px;flex:0 0 18px}.mn-rc.mn-rc--navy .mn-rc-share{color:#fff!important}.mn-rc.mn-rc--white .mn-rc-share{color:#052560!important}.mn-rc-menu{display:none;gap:8px}.mn-rc-menu.is-open{display:flex}.mn-rc .mn-rc-menu a,.mn-rc .mn-rc-menu button{flex:1 1 0;display:inline-flex;align-items:center;justify-content:center;min-height:40px;width:auto;min-width:0;margin:0;padding:0 12px!important;border-radius:30px!important;box-shadow:none!important;font-family:inherit;font-size:.88rem!important;font-weight:700!important;line-height:1;text-decoration:none!important;white-space:nowrap;cursor:pointer}.mn-rc.mn-rc--navy .mn-rc-menu a,.mn-rc.mn-rc--navy .mn-rc-menu button{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.25)!important;color:#fff!important}.mn-rc.mn-rc--white .mn-rc-menu a,.mn-rc.mn-rc--white .mn-rc-menu button{background:#EAF8F7!important;border:1px solid #CFEDEA!important;color:#052560!important}.mn-rc-share:focus-visible,.mn-rc-menu a:focus-visible,.mn-rc-menu button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}.mn-rc--bar .mn-rc-share,.mn-rc--bar .mn-rc-menu{display:none!important}.mn-rc .mn-rc-cta,.mn-rc .mn-rc-cta:hover{text-decoration:none!important}.mn-rc.mn-rc--navy .mn-rc-cta,.mn-rc.mn-rc--navy .mn-rc-cta:hover{color:#052560!important}.mn-rc.mn-rc--white .mn-rc-cta,.mn-rc.mn-rc--white .mn-rc-cta:hover{color:#fff!important}.mn-rc .mn-rc-dates,.mn-rc .mn-rc-dates li{list-style:none!important}.mn-rc .mn-rc-dates li{margin:0}.mn-rc--no-cta .mn-rc-cta{display:none!important}@container (max-width:760px){.mn-rc-box{grid-template-columns:1fr;padding:24px 18px;text-align:center}.mn-rc-sub{margin-inline:auto}.mn-rc-dates{justify-content:center}.mn-rc-tiles{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.mn-rc-moon{width:170px;height:170px}.mn-rc--bar .mn-rc-box{justify-content:center;padding:16px 14px}.mn-rc--bar .mn-rc-moon{display:none}.mn-rc--bar .mn-rc-text{flex:1 1 100%}.mn-rc--bar .mn-rc-side{flex-direction:column;width:100%;gap:12px}.mn-rc--bar .mn-rc-tiles{justify-content:center;flex-wrap:wrap;gap:6px}.mn-rc--bar .mn-rc-tile{padding:4px 9px}.mn-rc--bar .mn-rc-num{font-size:1.1rem}.mn-rc--bar .mn-rc-cta{width:100%}.mn-rc--bar .mn-rc-actions{width:100%}}@container (max-width:520px){.mn-rc-box{padding:16px 14px;gap:12px}.mn-rc-eyebrow{display:none}.mn-rc-sub{font-size:.85rem;line-height:1.5;margin:0 auto 8px}.mn-rc-hint{font-size:.7rem;line-height:1.5;margin:6px 0 0}.mn-rc-title{font-size:1.25rem;margin:0 0 8px}.mn-rc-dates{gap:6px;margin:0}.mn-rc-dates li{padding:2px 10px;font-size:.78rem}.mn-rc-side{gap:10px}.mn-rc-tile{padding:7px 4px 6px;border-radius:12px}.mn-rc-num{font-size:1.45rem}.mn-rc-lbl{font-size:.75rem;margin:0}.mn-rc-cta{min-height:42px;font-size:.95rem}.mn-rc .mn-rc-share{min-height:42px;padding:0 12px!important;font-size:.88rem!important}.mn-rc-cta{padding:0 14px}.mn-rc-moon{width:120px;height:120px;top:-30px;inset-inline-end:-30px}.mn-rc--bar .mn-rc-box{padding:12px;gap:8px}.mn-rc--bar .mn-rc-title{font-size:1rem;margin:0}.mn-rc--bar .mn-rc-side{gap:8px}.mn-rc--bar .mn-rc-tiles{flex-wrap:nowrap;gap:5px}.mn-rc--bar .mn-rc-tile{padding:2px 8px;gap:4px}.mn-rc--bar .mn-rc-num{font-size:1rem}.mn-rc--bar .mn-rc-lbl{font-size:.72rem}.mn-rc--bar .mn-rc-cta{min-height:36px;font-size:.88rem}}@media (prefers-reduced-motion:reduce){.mn-rc-cta{transition:none}}";
+  var MOON = '<svg class="mn-rc-moon" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" d="M78 62A38 38 0 1 1 38 22a30 30 0 0 0 40 40z"/></svg>';
+
+  function tile(key, label){
+    return '<div class="mn-rc-tile"><span class="mn-rc-num" data-k="'+key+'">0</span><span class="mn-rc-lbl">'+label+'</span></div>';
+  }
+  function html(){
+    /* العنوان div وليس h2 حتى لا يأخذ لون وحجم عناوين المتجر */
+    return '<div class="mn-rc-box">'+MOON+
+      '<div class="mn-rc-text">'+
+        '<p class="mn-rc-eyebrow">رمضان 1448 هـ</p>'+
+        '<div class="mn-rc-title" role="heading" aria-level="2">كم باقي على رمضان؟</div>'+
+        '<p class="mn-rc-sub">شارك في تجهيز مساجد مكة قبل دخول الشهر الكريم.</p>'+
+        '<ul class="mn-rc-dates"><li>الاثنين 8 فبراير 2027</li><li>1 رمضان 1448 هـ</li></ul>'+
+        '<p class="mn-rc-hint">حسب تقويم أم القرى، وقد يتغير يومًا واحدًا حسب رؤية الهلال.</p>'+
+      '</div>'+
+      '<div class="mn-rc-side">'+
+        '<div class="mn-rc-tiles" role="timer" aria-label="الوقت الباقي على رمضان">'+
+          tile('d','يوم')+tile('h','ساعة')+tile('m','دقيقة')+tile('s','ثانية')+
+        '</div>'+
+        '<div class="mn-rc-actions">'+
+          '<a class="mn-rc-cta" href="'+CFG.link+'">تبرع لمشروع جاهز لرمضان</a>'+
+          '<button type="button" class="mn-rc-share" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span>مشاركة</span></button>'+
+        '</div>'+
+        '<div class="mn-rc-menu"><a class="mn-rc-wa" href="#" target="_blank" rel="noopener">واتساب</a><button type="button" class="mn-rc-copy">نسخ الرابط</button></div>'+
+      '</div>'+
+    '</div>';
+  }
+
+  /* زر المشاركة: في الجوال يفتح قائمة المشاركة في الجهاز، وفي الحاسوب يُظهر «واتساب» و«نسخ الرابط» */
+  function bindShare(host, url, target){
+    var btn = host.querySelector('.mn-rc-share'), menu = host.querySelector('.mn-rc-menu'), wa = host.querySelector('.mn-rc-wa'), cp = host.querySelector('.mn-rc-copy');
+    if (!btn || !menu || !wa || !cp) return;
+    function daysText(){ var d = Math.floor(Math.max(0, target - Date.now()) / 86400000); return d >= 11 ? d + ' يومًا' : d >= 3 ? d + ' أيام' : d === 2 ? 'يومان' : d === 1 ? 'يوم واحد' : 'أقل من يوم'; }
+    function text(){ return 'باقي على رمضان ' + daysText() + '. شارك في تجهيز مساجد مكة قبل دخول الشهر الكريم.'; }
+    function show(on){ menu.classList.toggle('is-open', on); btn.setAttribute('aria-expanded', on ? 'true' : 'false'); if (on) wa.href = 'https://wa.me/?text=' + encodeURIComponent(text() + '\n' + url); }
+    btn.addEventListener('click', function(){
+      if (menu.classList.contains('is-open')) { show(false); return; }
+      var mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (mobile && navigator.share){
+        navigator.share({ title: 'كم باقي على رمضان؟', text: text(), url: url }).catch(function(e){ if (!e || e.name !== 'AbortError') show(true); });
+      } else show(true);
+    });
+    cp.addEventListener('click', function(){
+      function done(){ cp.textContent = 'تم نسخ الرابط'; setTimeout(function(){ cp.textContent = 'نسخ الرابط'; }, 2000); }
+      function fallback(){ try { var t = document.createElement('textarea'); t.value = url; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); done(); } catch(e){ cp.textContent = url; } }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fallback); else fallback();
+    });
+  }
+
+  /* شروق وغروب مكة لكل يوم، بتوقيت السعودية مهما كان بلد الزائر */
+  function isDay(){
+    var ksa = new Date(Date.now() + 3 * 3600000);
+    var N = Math.floor((Date.UTC(ksa.getUTCFullYear(), ksa.getUTCMonth(), ksa.getUTCDate()) - Date.UTC(ksa.getUTCFullYear(), 0, 0)) / 86400000);
+    var g = 2 * Math.PI / 365 * (N - 1);
+    var eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+    var dec = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+    var lat = 21.4225 * Math.PI / 180, lon = 39.8262;
+    var ha = Math.acos(Math.cos(90.833 * Math.PI / 180) / (Math.cos(lat) * Math.cos(dec)) - Math.tan(lat) * Math.tan(dec)) * 180 / Math.PI;
+    var rise = 720 - 4 * (lon + ha) - eq + 180, set = 720 - 4 * (lon - ha) - eq + 180;
+    var now = ksa.getUTCHours() * 60 + ksa.getUTCMinutes();
+    return now >= rise && now < set;
+  }
+
+  var wrap, host, timer, themeTimer;
+  function theme(){
+    var day = true; try { day = isDay(); } catch(e){}
+    host.classList.toggle('mn-rc--white', day);
+    host.classList.toggle('mn-rc--navy', !day);
+  }
+  function pad(n){ return n < 10 ? '0' + n : String(n); }
+  function tick(){
+    var left = CFG.target - Date.now();
+    if (left <= 0){ clearInterval(timer); clearInterval(themeTimer); if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap); return; }
+    var s = Math.floor(left / 1000);
+    var v = { d: String(Math.floor(s / 86400)), h: pad(Math.floor(s % 86400 / 3600)), m: pad(Math.floor(s % 3600 / 60)), s: pad(s % 60) };
+    var nums = host.querySelectorAll('[data-k]');
+    for (var i = 0; i < nums.length; i++) nums[i].textContent = v[nums[i].getAttribute('data-k')];
+  }
+  function mount(){
+    if (document.getElementById('mn-rc-wrap')) return true;
+    var ref = document.querySelector(isHome ? CFG.homeAfter : CFG.productBefore);
+    if (!ref || !ref.parentNode) return false;
+    if (!document.getElementById('mn-rc-style')){
+      var st = document.createElement('style'); st.id = 'mn-rc-style'; st.textContent = CSS; document.head.appendChild(st);
+    }
+    wrap = document.createElement('div'); wrap.id = 'mn-rc-wrap';
+    wrap.style.cssText = 'max-width:1366px;margin:' + (isHome ? '24px' : '8px') + ' auto ' + (isHome ? '8px' : '28px') + ';padding:0 15px;box-sizing:border-box;clear:both';
+    host = document.createElement('div');
+    host.className = 'mn-rc' + (isHome ? '' : ' mn-rc--bar') + (isRamadanProject ? ' mn-rc--no-cta' : '');
+    host.innerHTML = html();
+    wrap.appendChild(host);
+    if (isHome) ref.parentNode.insertBefore(wrap, ref.nextSibling); else ref.parentNode.insertBefore(wrap, ref);
+    theme(); tick();
+    if (isHome){
+      bindShare(host, location.origin + '/#ramadan', CFG.target);
+      /* رابط المشاركة ينتهي بـ #ramadan: ننزل بالزائر إلى العداد مباشرة */
+      if (location.hash === '#ramadan') setTimeout(function(){ try { wrap.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e){ wrap.scrollIntoView(); } }, 400);
+    }
+    timer = setInterval(tick, 1000);
+    themeTimer = setInterval(theme, 60000);
+    return true;
+  }
+  function start(){
+    var tries = 0;
+    (function attempt(){ try { if (mount()) return; } catch(e){ return; } if (++tries < 20) setTimeout(attempt, 500); })();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
