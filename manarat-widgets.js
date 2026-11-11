@@ -347,8 +347,7 @@
   function bindShare(host, url, target){
     var btn = host.querySelector('.mn-rc-share'), menu = host.querySelector('.mn-rc-menu'), wa = host.querySelector('.mn-rc-wa'), cp = host.querySelector('.mn-rc-copy');
     if (!btn || !menu || !wa || !cp) return;
-    function daysText(){ var d = Math.floor(Math.max(0, target - Date.now()) / 86400000); return d >= 11 ? d + ' يومًا' : d >= 3 ? d + ' أيام' : d === 2 ? 'يومان' : d === 1 ? 'يوم واحد' : 'أقل من يوم'; }
-    function text(){ return 'باقي على رمضان ' + daysText() + '. شارك في تجهيز مساجد مكة قبل دخول الشهر الكريم.'; }
+    function text(){ return 'كم باقي على رمضان ؟'; }
     function show(on){ menu.classList.toggle('is-open', on); btn.setAttribute('aria-expanded', on ? 'true' : 'false'); if (on) wa.href = 'https://wa.me/?text=' + encodeURIComponent(text() + '\n' + url); }
     btn.addEventListener('click', function(){
       if (menu.classList.contains('is-open')) { show(false); return; }
