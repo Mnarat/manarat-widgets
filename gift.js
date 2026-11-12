@@ -108,7 +108,7 @@
     '.mng{font-family:"Almarai","Tajawal",Tahoma,sans-serif;direction:rtl;text-align:right;color:#1d2939;line-height:1.6}',
     '.mng-open{display:block;width:100%;margin-top:10px;font:700 15px/1.4 "Almarai",Tahoma,sans-serif;color:' + NAVY + ';background:#fff;border:1.5px solid ' + NAVY + ';border-radius:999px;padding:11px 14px;cursor:pointer;text-align:center;text-decoration:none}',
     '.mng-open:hover{background:#f2f5fb}',
-    '.mng-cardlink{display:block;width:100%;margin-top:8px;font:700 13.5px/1.3 "Almarai",Tahoma,sans-serif;color:' + NAVY + '!important;background:#fff;border:1.5px solid ' + NAVY + ';border-radius:999px;padding:8px 10px;text-align:center;text-decoration:none!important}',
+    '.mng-cardlink{display:block;width:100%;margin-top:8px;font:800 15px/1.3 "Almarai",Tahoma,sans-serif;color:' + NAVY + '!important;background:#fff;border:1.5px solid ' + NAVY + ';border-radius:999px;padding:8px 10px;text-align:center;text-decoration:none!important}',
     '.mng-panel{border:1.5px solid ' + TEAL + ';border-radius:16px;padding:14px;margin-top:12px;background:#fbfefe}',
     '.mng-panel h4{margin:0 0 4px;color:' + NAVY + ';font-size:16px;font-weight:800}',
     '.mng label.mng-l{display:block;font-size:13px;color:#5b6b80;margin:12px 0 5px;font-weight:700}',
@@ -161,11 +161,13 @@
     '.mng-msgbox{white-space:pre-wrap;background:#f8fafc;border:1px solid #eef1f4;border-radius:10px;padding:9px;font-size:13.5px;margin-top:8px}',
     '.mng-mhead{display:flex;align-items:baseline;justify-content:flex-start;gap:10px}.mng-mhead .mng-l{margin-bottom:5px}',
     '.mng button.mng-tog{font:700 12.5px "Almarai",Tahoma,sans-serif!important;color:'+TEALD+'!important;background:none!important;border:0!important;padding:12px 2px 5px!important;cursor:pointer;box-shadow:none!important;width:auto!important;min-height:0!important}',
-    '@keyframes mngp{50%{box-shadow:0 0 0 6px rgba(0,181,167,.35)}}button.mng-open.mng-pulse{animation:mngp 1.2s 3}',
+    '@keyframes mngp{0%,100%{box-shadow:0 0 0 0 rgba(0,181,167,0)}50%{box-shadow:0 0 0 7px rgba(0,181,167,.38),0 0 18px rgba(0,181,167,.45)}}',
+    'button.mng-open{animation:mngp 2.2s ease-in-out infinite}button.mng-open.on{animation:none}',
+    '.mng label.mng-wal{color:#0B8F4D!important;font-size:14.5px!important;font-weight:800!important;background:#E7F8EE;border-radius:8px;padding:3px 9px;display:inline-block}',
     '.mng-spin{text-align:center;color:' + NAVY + ';padding:30px 0;font-size:15px}',
     /* ثيم إيثار يمسح حدود وخلفيات الأزرار: نثبّتها */
-    'button.mng-open,a.mng-cardlink{border:1.5px solid ' + NAVY + '!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important;box-shadow:none!important}',
-    'button.mng-open{padding:11px 14px!important;font-size:15px!important;width:100%!important;min-height:44px}',
+    'button.mng-open,a.mng-cardlink{border:1.5px solid ' + NAVY + '!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important}',
+    'button.mng-open{padding:13px 14px!important;font-size:18px!important;font-weight:800!important;width:100%!important;min-height:44px}',
     '.mng button.mng-chip{border:1px solid #CFEDEA!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important;padding:6px 11px!important;font-size:13px!important;line-height:1.5!important;min-height:0!important;box-shadow:none!important}',
     '.mng button.mng-chip.on{background:#E0F5F3!important;border-color:' + TEAL + '!important}',
     '.mng button.mng-chip.more{border-style:dashed!important;color:' + TEALD + '!important}',
@@ -258,7 +260,7 @@
     w.appendChild(el('div', 'mng-hint', 'الأسماء حروف فقط، بلا أرقام ولا روابط، حتى 25 حرفًا.'));
     w.appendChild(el('div', 'mng-priv', '🔒 الأسماء تظهر على البطاقة فقط، ولا تظهر في المتجر ولا في محركات البحث، وتُحذف بعد 90 يومًا. لا نطلب أي رقم جوال هنا.'));
 
-    var mHead = el('div', 'mng-mhead'); mHead.appendChild(el('label', 'mng-l', 'نص رسالة واتساب (يمكنك تعديله)'));
+    var mHead = el('div', 'mng-mhead'); mHead.appendChild(el('label', 'mng-l mng-wal', '💬 نص رسالة واتساب (يمكنك تعديله)'));
     var mTog = el('button', 'mng-tog', st.mOpen ? 'إخفاء ▴' : 'إظهار ▾'); mTog.type = 'button'; mHead.appendChild(mTog); w.appendChild(mHead);
     var mBox = el('div'); mBox.style.display = st.mOpen ? 'block' : 'none'; w.appendChild(mBox);
     var mIn = el('textarea'); mIn.rows = 3; mIn.maxLength = 300; mBox.appendChild(mIn);
@@ -267,7 +269,7 @@
     var lkL = el('label', 'mng-chk'), lkIn = el('input'); lkIn.type = 'checkbox'; lkIn.checked = !st.noLink;
     lkL.appendChild(lkIn); lkL.appendChild(document.createTextNode('أضِف رابط البطاقة في آخر الرسالة')); mBox.appendChild(lkL);
     var lockL = el('div', 'mng-hint'); mBox.appendChild(lockL);
-    var lkTxt = function () { lockL.textContent = st.noLink ? 'لن يُضاف الرابط للرسالة، ويبقى مكتوبًا داخل صورة البطاقة.' : 'سيُضاف رابط البطاقة تلقائيًا في آخر رسالتك بعد التبرع.'; };
+    var lkTxt = function () { lockL.textContent = st.noLink ? 'لن يُضاف الرابط للرسالة.' : 'سيُضاف رابط البطاقة في آخر الرسالة.'; };
     lkTxt(); lkIn.onchange = function () { st.noLink = !lkIn.checked; lkTxt(); };
     mTog.onclick = function () { st.mOpen = !st.mOpen; mBox.style.display = st.mOpen ? 'block' : 'none'; mTog.textContent = st.mOpen ? 'إخفاء ▴' : 'إظهار ▾'; };
     w.appendChild(el('label', 'mng-l', 'معاينة البطاقة'));
@@ -376,7 +378,7 @@
       var sh = shares(), pick = 0;
       var shBox;
       if (sh.length) {
-        panel.appendChild(el('label', 'mng-l', 'مبلغ الإهداء (أقل مبلغ = أول سهم في المشروع)'));
+        panel.appendChild(el('label', 'mng-l', 'مبلغ الإهداء'));
         shBox = el('div', 'mng-chips'); panel.appendChild(shBox);
         var drawSh = function () {
           shBox.innerHTML = '';
@@ -388,9 +390,12 @@
           ob.onclick = function () { pick = -1; drawSh(); setTimeout(function () { amt.focus(); }, 50); }; shBox.appendChild(ob);
           amtWrap.style.display = pick < 0 ? 'block' : 'none';
         };
-        var minV = sh.reduce(function (m, x) { return Math.min(m, x.v); }, sh[0].v);
+        var minV = 1;
         var amtWrap = el('div'), amt = el('input'); amt.type = 'number'; amt.inputMode = 'numeric'; amt.min = minV; amt.step = 1;
-        amt.placeholder = 'اكتب المبلغ بالريال (' + minV + ' أو أكثر)'; amtWrap.style.marginTop = '8px'; amtWrap.appendChild(amt);
+        var setMin = function (m) { minV = m; amt.min = m; amt.placeholder = 'اكتب المبلغ بالريال (' + m + ' أو أكثر)'; }; setMin(1);
+        fetch('/api/v1/products/' + form.id.replace('product-form-', ''), {headers:{Accept:'application/json'}}).then(function (r) { return r.json(); })
+          .then(function (j) { var p = j && j.data && j.data.product, m = p && +p.min_quantity_per_cart; if (m > 0) setMin(m); }).catch(function () {});
+        amt.placeholder = amt.placeholder; amtWrap.style.marginTop = '8px'; amtWrap.appendChild(amt);
         panel.appendChild(amtWrap);
         drawSh();
       }
@@ -425,7 +430,7 @@
       panel.style.display = 'block'; ev('panel_open');
       if (scroll) setTimeout(function () { try { wrap.scrollIntoView({behavior:'smooth', block:'start'}); } catch (e) {} }, 300);
     }
-    btn.onclick = function () { ev('gift_click'); if (panel.style.display === 'none') open(false); else panel.style.display = 'none'; };
+    btn.onclick = function () { ev('gift_click'); if (panel.style.display === 'none') { open(false); btn.classList.add('on'); } else { panel.style.display = 'none'; btn.classList.remove('on'); } };
     if (location.hash === '#hadiya-open') { setTimeout(function () { try { wrap.scrollIntoView({behavior:'smooth', block:'center'}); } catch (e) {} btn.classList.add('mng-pulse'); setTimeout(function () { btn.classList.remove('mng-pulse'); }, 4000); }, 400); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
     return true;
   }
