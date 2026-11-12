@@ -422,3 +422,20 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
+
+/* ============================================================
+   MN-GIFT-LOADER — يحمّل gift.js («🎁 أهدِ من تحب») من نفس رقم الـcommit
+   الإيقاف السريع: احذف هذا الجزء، أو ضع KILL=1 في شيت «إهداءات منارات».
+   ============================================================ */
+(function(){
+  try {
+    if (document.getElementById('mn-gift-js')) return;
+    var me = document.currentScript && document.currentScript.src;
+    if (!me) { var s = document.querySelector('script[src*="manarat-widgets/"][src*="manarat-widgets.js"]') || document.querySelector('script[src*="manarat-widgets.js"]'); me = s && s.src; }
+    if (!me || me.indexOf('manarat-widgets.js') < 0) return;
+    var g = document.createElement('script');
+    g.id = 'mn-gift-js'; g.defer = true;
+    g.src = me.replace(/manarat-widgets\.js(\?.*)?$/, 'gift.js');
+    (document.head || document.documentElement).appendChild(g);
+  } catch (e) {}
+})();
