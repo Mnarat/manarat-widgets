@@ -178,9 +178,12 @@
     /* ثيم إيثار يمسح حدود وخلفيات الأزرار: نثبّتها */
     'button.mng-open,a.mng-cardlink{border:1.5px solid ' + NAVY + '!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important}',
     'button.mng-open{padding:13px 14px!important;font-size:18px!important;font-weight:800!important;width:100%!important;min-height:44px}',
-    'button.mng-open.mng-side{order:5;flex:0 1 auto;width:auto!important;min-width:200px;margin:0!important;padding:8px 22px!important;font-size:17px!important}',
-    '@media(max-width:767px){button.mng-open.mng-side{flex:1 1 100%;width:100%!important;padding:12px 14px!important;font-size:18px!important}}',
-    'a.mng-cardlink{font-size:16.5px!important;padding:9px 10px!important;animation:mngp 2.2s ease-in-out infinite}',
+    /* زر الإهداء بجانب «تبرع الان»: نفس زوايا وارتفاع وخط زر الثيم (6px / 44px / 16px-700) ويبقى بإطار كحلي ليظل «تبرع الان» هو الأساسي */
+    'button.mng-open.mng-side{order:5;flex:0 1 auto;width:auto!important;min-width:200px;min-height:44px!important;margin:0!important;padding:4px 22px!important;font-size:16px!important;font-weight:700!important;border-radius:6px!important}',
+    '@keyframes mngs{0%,100%{box-shadow:0 0 0 0 rgba(0,181,167,0)}50%{box-shadow:0 0 0 4px rgba(0,181,167,.30),0 0 12px rgba(0,181,167,.35)}}',
+    'button.mng-open.mng-side:not(.on){animation-name:mngs}',
+    '@media(max-width:767px){button.mng-open.mng-side{flex:1 1 100%;width:100%!important;padding:4px 14px!important;font-size:16px!important}}',
+    'a.mng-cardlink{min-height:46px;font-size:19px!important;font-weight:700!important;padding:6px 14px!important;border-radius:30px!important;animation:none}a.mng-cardlink:hover,a.mng-cardlink:focus-visible{box-shadow:0 0 0 4px rgba(0,181,167,.30)}',
     '.mng button.mng-chip{border:1px solid #CFEDEA!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important;padding:6px 11px!important;font-size:13px!important;line-height:1.5!important;min-height:0!important;box-shadow:none!important}',
     '.mng button.mng-chip.on{background:#E0F5F3!important;border-color:' + TEAL + '!important}',
     '.mng button.mng-chip.more{border-style:dashed!important;color:' + TEALD + '!important}',
@@ -195,9 +198,9 @@
     '.mng button.mng-x{background:#f2f4f7!important;border:0!important;border-radius:50%!important;padding:0!important;width:34px!important;height:34px!important}',
     /* أيقونة الهدية داخل الزر ورابط البطاقات: يمين النص، ولا تغيّر ارتفاع الزر (الأيقونة أقصر من سطر النص) */
     'button.mng-open,a.mng-cardlink{display:flex!important;align-items:center;justify-content:center;gap:8px;direction:rtl}',
-    '.mng-ic{width:22px!important;height:22px!important;flex:0 0 auto;display:block}',
-    '.mng-cardlink .mng-ic{width:18px!important;height:18px!important}',
-    '@media (prefers-reduced-motion:no-preference){@keyframes mngbeat{0%,100%{transform:scale(1)}25%{transform:scale(1.07)}50%{transform:scale(1)}} .mng-ic g{transform-box:fill-box;transform-origin:center bottom;animation:mngbeat 2.8s ease-in-out infinite}}'
+    '.mng-ic{width:30px!important;height:30px!important;flex:0 0 auto;display:block;overflow:visible}',
+    '.mng-cardlink .mng-ic{width:28px!important;height:28px!important}',
+    '@media (prefers-reduced-motion:no-preference){@keyframes mngbeat{0%,55%,100%{transform:translateY(0) scale(1) rotate(0)}62%{transform:translateY(-8%) scale(1.14) rotate(-9deg)}70%{transform:translateY(-8%) scale(1.14) rotate(8deg)}78%{transform:translateY(-4%) scale(1.08) rotate(-5deg)}86%{transform:translateY(0) scale(1) rotate(2deg)}} .mng-ic g{transform-box:fill-box;transform-origin:center bottom;animation:mngbeat 2.6s ease-in-out infinite}} @media (prefers-reduced-motion:reduce){button.mng-open,a.mng-cardlink{animation:none!important}}'
   ].join('\n');
   function style() {
     if ($('#mng-style')) return;
