@@ -476,6 +476,72 @@
 })();
 
 /* ============================================================
+   MN-TEXT-FIX — يصحح همزات وإملاء نصوص الثيم بعد تحميل الصفحة
+   يبدّل النص الكامل فقط إذا طابق النص الخاطئ تماماً (بعد حذف المسافات حوله).
+   لا يلمس نصوص المتبرعين ولا الأوصاف. يراقب الصفحة 30 ثانية ثم يتوقف.
+   الإيقاف السريع: احذف هذا الجزء.
+   ============================================================ */
+(function(){
+  try {
+    var MAP = {
+      'تبرع الان': 'تبرع الآن',
+      'ادخل مبلغ آخر': 'أدخل مبلغاً آخر',
+      'اضف تقييم': 'أضف تقييماً',
+      'ارسل تعلقيك': 'أرسل تعليقك',
+      'اجمالي التبرعات': 'إجمالي التبرعات',
+      'السلة فارغه!': 'السلة فارغة!',
+      'الاكثر تداولاً': 'الأكثر تداولاً',
+      'اغلاق': 'إغلاق'
+    };
+    var ATTRS = ['placeholder', 'aria-label', 'title'];
+    var SEL = 'a,button,span,label,h1,h2,h3,h4,h5,h6,nav,li,input,textarea';
+    function trim(s){ return s.replace(/^\s+|\s+$/g, ''); }
+    function norm(s){ return trim(s).replace(/\s+/g, ' '); }
+    function fixNode(el){
+      try {
+        for (var a = 0; a < ATTRS.length; a++) {
+          var v = el.getAttribute && el.getAttribute(ATTRS[a]);
+          if (v) {
+            var vk = norm(v);
+            if (MAP.hasOwnProperty(vk)) el.setAttribute(ATTRS[a], MAP[vk]);
+          }
+        }
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') return;
+        for (var n = el.firstChild; n; n = n.nextSibling) {
+          if (n.nodeType !== 3) continue;
+          var raw = trim(n.nodeValue);
+          var k = raw.replace(/\s+/g, ' ');
+          if (k && MAP.hasOwnProperty(k)) n.nodeValue = n.nodeValue.replace(raw, MAP[k]);
+        }
+      } catch (e) {}
+    }
+    function run(){
+      try {
+        var list = document.querySelectorAll(SEL);
+        for (var i = 0; i < list.length; i++) fixNode(list[i]);
+      } catch (e) {}
+    }
+    var pending = false;
+    function schedule(){
+      if (pending) return;
+      pending = true;
+      setTimeout(function(){ pending = false; run(); }, 60);
+    }
+    function begin(){
+      run();
+      if (typeof MutationObserver === 'undefined') {
+        var c = 0, iv = setInterval(function(){ run(); if (++c >= 30) clearInterval(iv); }, 1000);
+        return;
+      }
+      var mo = new MutationObserver(schedule);
+      mo.observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['placeholder', 'aria-label', 'title'] });
+      setTimeout(function(){ try { mo.disconnect(); } catch (e) {} run(); }, 30000);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', begin); else begin();
+  } catch (e) {}
+})();
+
+/* ============================================================
    MN-GIFT-LOADER — يحمّل gift.js («🎁 أهدِ من تحب») من نفس رقم الـcommit
    الإيقاف السريع: احذف هذا الجزء، أو ضع KILL=1 في شيت «إهداءات منارات».
    ============================================================ */
