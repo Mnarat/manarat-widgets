@@ -126,6 +126,8 @@
     '.mng-sw.more{background:#fff;border:1.5px dashed ' + TEAL + '}.mng-sw.more span{color:' + NAVY + ';text-shadow:none;bottom:14px}',
     '.mng input[type=text],.mng textarea,.mng select{width:100%;font:inherit;font-size:15px;padding:9px 11px;border:1px solid #d5dde6;border-radius:10px;background:#fff;color:#1d2939}',
     '.mng textarea{resize:vertical;font-size:14px}',
+    '.mng input[type=number]{width:100%!important;font:inherit!important;font-size:15px!important;padding:9px 11px!important;border:1px solid #d5dde6!important;border-radius:10px!important;background:#fff!important;color:#1d2939!important;height:auto!important;text-align:right!important}',
+    '.mng input::placeholder,.mng textarea::placeholder{color:#98a2b3!important;opacity:1!important}',
     '.mng-chk{display:flex;gap:8px;align-items:center;font-size:13.5px;margin-top:8px;cursor:pointer}',
     '.mng-hint{font-size:12px;color:#5b6b80;margin-top:6px}',
     '.mng-lock{font-size:12.5px;background:#f8fafc;border:1px solid #eef1f4;border-radius:8px;padding:6px 9px;margin-top:5px}',
