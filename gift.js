@@ -157,7 +157,22 @@
     '.mng-small{font-size:11.5px;color:#667085;text-align:center;margin-top:10px}',
     '.mng-dua{text-align:center;color:' + NAVY + ';font-size:14.5px;margin-top:10px}',
     '.mng-msgbox{white-space:pre-wrap;background:#f8fafc;border:1px solid #eef1f4;border-radius:10px;padding:9px;font-size:13.5px;margin-top:8px}',
-    '.mng-spin{text-align:center;color:' + NAVY + ';padding:30px 0;font-size:15px}'
+    '.mng-spin{text-align:center;color:' + NAVY + ';padding:30px 0;font-size:15px}',
+    /* ثيم إيثار يمسح حدود وخلفيات الأزرار: نثبّتها */
+    'button.mng-open,a.mng-cardlink{border:1.5px solid ' + NAVY + '!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important;box-shadow:none!important}',
+    'button.mng-open{padding:11px 14px!important;font-size:15px!important;width:100%!important;min-height:44px}',
+    '.mng button.mng-chip{border:1px solid #CFEDEA!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important;padding:6px 11px!important;font-size:13px!important;line-height:1.5!important;min-height:0!important;box-shadow:none!important}',
+    '.mng button.mng-chip.on{background:#E0F5F3!important;border-color:' + TEAL + '!important}',
+    '.mng button.mng-chip.more{border-style:dashed!important;color:' + TEALD + '!important}',
+    '.mng button.mng-sw{border:2px solid transparent!important;border-radius:9px!important;padding:0!important;min-height:0!important;box-shadow:none!important}',
+    '.mng button.mng-sw.on{border-color:' + TEAL + '!important;box-shadow:0 0 0 2px #fff inset!important}',
+    '.mng button.mng-sw.more{background:#fff!important;border:1.5px dashed ' + TEAL + '!important}',
+    '.mng .mng-btn{border-radius:999px!important;padding:12px!important;font-size:15px!important;box-shadow:none!important;width:100%!important}',
+    '.mng .mng-b1{background:' + TEAL + '!important;color:#fff!important;border:0!important}',
+    '.mng .mng-b2{background:#fff!important;color:' + NAVY + '!important;border:1.5px solid ' + NAVY + '!important}',
+    '.mng .mng-bw{background:#25D366!important;color:#073b1d!important;border:0!important}',
+    '.mng .mng-bs{background:#fff!important;color:#075E54!important;border:1.5px solid #25D366!important}',
+    '.mng button.mng-x{background:#f2f4f7!important;border:0!important;border-radius:50%!important;padding:0!important;width:34px!important;height:34px!important}'
   ].join('\n');
   function style() {
     if ($('#mng-style')) return;
