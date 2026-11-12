@@ -28,26 +28,26 @@
     'ramadan-ready': 'تهيئة المساجد لرمضان', 'daily-blessing': 'بركتك اليومية'
   };
 
-  /* المناسبات: الترتيب يطابق OCC في سكربت الجمعية حرفيًا. d = التصميم المقترح.
-     قاعدة دائمة: أي مناسبة أو تصميم جديد يُضاف في آخر القائمة فقط، وفي الملفين معًا. */
+  /* المناسبات: الترتيب يطابق OCC في سكربت الجمعية حرفياً. d = التصميم المقترح.
+     قاعدة دائمة: أي مناسبة أو تصميم جديد يُضاف في آخر القائمة فقط، وفي الملفين معاً. */
   var OCC = [
     {g:0, l:'إهداء عام', m:'جعله الله في ميزان حسناتك', f:'جعله الله في ميزان حسناتكِ', d:0},
     {g:0, l:'مولود جديد', m:'بارك الله لكم في ما وهبكم، وجعله قرة عين لكم', d:1},
     {g:0, l:'زواج', m:'بارك الله لكما وبارك عليكما وجمع بينكما في خير', d:2},
-    {g:0, l:'تخرّج', m:'مبارك تخرّجك، وجعل الله علمك نافعًا', f:'مبارك تخرّجكِ، وجعل الله علمكِ نافعًا', d:3},
-    {g:0, l:'نجاح وتفوّق', m:'مبارك نجاحك، وزادك الله توفيقًا', f:'مبارك نجاحكِ، وزادكِ الله توفيقًا', d:3},
+    {g:0, l:'تخرّج', m:'مبارك تخرّجك، وجعل الله علمك نافعاً', f:'مبارك تخرّجكِ، وجعل الله علمكِ نافعاً', d:3},
+    {g:0, l:'نجاح وتفوّق', m:'مبارك نجاحك، وزادك الله توفيقاً', f:'مبارك نجاحكِ، وزادكِ الله توفيقاً', d:3},
     {g:0, l:'وظيفة أو ترقية', m:'وفّقك الله، وبارك لك في رزقك', f:'وفّقكِ الله، وبارك لكِ في رزقكِ', d:12},
     {g:0, l:'منزل جديد', m:'بارك الله لك في دارك، وجعلها عامرة بذكره', f:'بارك الله لكِ في داركِ، وجعلها عامرة بذكره', d:4},
     {g:0, l:'ختم القرآن', m:'جعل الله القرآن ربيع قلبك ونور صدرك', f:'جعل الله القرآن ربيع قلبكِ ونور صدركِ', d:5},
-    {g:0, l:'شكر وتقدير', m:'جزاك الله خيرًا، وشكر لك فضلك', f:'جزاكِ الله خيرًا، وشكر لكِ فضلكِ', d:12},
+    {g:0, l:'شكر وتقدير', m:'جزاك الله خيراً، وشكر لك فضلك', f:'جزاكِ الله خيراً، وشكر لكِ فضلكِ', d:12},
     {g:1, l:'رمضان', m:'مبارك عليك الشهر، وتقبّل الله منك الصيام والقيام', f:'مبارك عليكِ الشهر، وتقبّل الله منكِ الصيام والقيام', d:6},
     {g:1, l:'عيد الفطر', m:'تقبّل الله منا ومنكم، وعيدكم مبارك', d:7},
     {g:1, l:'عيد الأضحى', m:'تقبّل الله منا ومنكم، وكل عام وأنتم بخير', d:7},
     {g:1, l:'عشر ذي الحجة', m:'تقبّل الله منك في خير أيام الدنيا', f:'تقبّل الله منكِ في خير أيام الدنيا', d:8},
-    {g:1, l:'حج أو عمرة', m:'تقبّل الله طاعتك، وجعل سعيك مشكورًا وذنبك مغفورًا', f:'تقبّل الله طاعتكِ، وجعل سعيكِ مشكورًا وذنبكِ مغفورًا', d:8},
-    {g:2, l:'برّ الوالدين', m:'برًّا بك، وجزاك الله عني خير الجزاء', f:'برًّا بكِ، وجزاكِ الله عني خير الجزاء', d:13},
+    {g:1, l:'حج أو عمرة', m:'تقبّل الله طاعتك، وجعل سعيك مشكوراً وذنبك مغفوراً', f:'تقبّل الله طاعتكِ، وجعل سعيكِ مشكوراً وذنبكِ مغفوراً', d:8},
+    {g:2, l:'برّ الوالدين', m:'برّاً بك، وجزاك الله عني خير الجزاء', f:'برّاً بكِ، وجزاكِ الله عني خير الجزاء', d:13},
     {g:2, l:'صدقة عن متوفى', dead:1, m:'رحمه الله، وجعلها في ميزان حسناته', f:'رحمها الله، وجعلها في ميزان حسناتها', d:9},
-    {g:2, l:'دعاء لمريض بالشفاء', m:'نسأل الله أن يشفيك شفاءً لا يغادر سقمًا', f:'نسأل الله أن يشفيكِ شفاءً لا يغادر سقمًا', d:10},
+    {g:2, l:'دعاء لمريض بالشفاء', m:'نسأل الله أن يشفيك شفاءً لا يغادر سقماً', f:'نسأل الله أن يشفيكِ شفاءً لا يغادر سقماً', d:10},
     {g:0, l:'الحمد لله على السلامة', m:'الحمد لله على سلامتك، وألبسك الله ثوب الصحة والعافية', f:'الحمد لله على سلامتكِ، وألبسكِ الله ثوب الصحة والعافية', d:10}
   ];
   var GROUPS = ['أفراح', 'مواسم', 'دعاء وصدقة'];
@@ -90,7 +90,7 @@
   }
   function isMobile() { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
   function post(body) {
-    /* مهلة 60 ثانية حتى لا يبقى الزر معلّقًا إن تأخر السكربت */
+    /* مهلة 60 ثانية حتى لا يبقى الزر معلّقاً إن تأخر السكربت */
     var ac = window.AbortController ? new AbortController() : null;
     if (ac) setTimeout(function () { ac.abort(); }, 60000);
     return fetch(API, {method:'POST', body:JSON.stringify(body), redirect:'follow', signal: ac ? ac.signal : undefined})
@@ -278,8 +278,8 @@
     w.appendChild(tIn);
     var feL = el('label', 'mng-chk'), feIn = el('input'), feT = el('span'); feIn.type = 'checkbox'; feIn.checked = !!st.fem;
     feL.appendChild(feIn); feL.appendChild(feT); w.appendChild(feL);
-    w.appendChild(el('div', 'mng-hint', 'الأسماء حروف فقط، بلا أرقام ولا روابط، حتى 25 حرفًا.'));
-    w.appendChild(el('div', 'mng-priv', '🔒 الأسماء تظهر على البطاقة فقط، ولا تظهر في المتجر ولا في محركات البحث، وتُحذف مع رابط البطاقة بعد 90 يومًا، فاحفظ الصورة إن أردت بقاءها. لا نطلب أي رقم جوال هنا.'));
+    w.appendChild(el('div', 'mng-hint', 'الأسماء حروف فقط، بلا أرقام ولا روابط، حتى 25 حرفاً.'));
+    w.appendChild(el('div', 'mng-priv', '🔒 الأسماء تظهر على البطاقة فقط، ولا تظهر في المتجر ولا في محركات البحث، وتُحذف مع رابط البطاقة بعد 90 يوماً، فاحفظ الصورة إن أردت بقاءها. لا نطلب أي رقم جوال هنا.'));
 
     var mHead = el('div', 'mng-mhead'); mHead.appendChild(el('label', 'mng-l mng-wal', '💬 نص رسالة واتساب (يمكنك تعديله)'));
     var mTog = el('button', 'mng-tog', st.mOpen ? 'إخفاء ▴' : 'إظهار ▾'); mTog.type = 'button'; mHead.appendChild(mTog); w.appendChild(mHead);
@@ -367,7 +367,7 @@
     };
   }
   function newState(p) { return {noLink:false, p:p || '', o:0, d:0, th:0, ns:1, fem:false, anon:false, from:'', to:'', msg:'', edited:0, dm:0}; }
-  /* اختيارات قديمة محفوظة في المتصفح قد تحمل رقمًا خارج القوائم بعد تحديث: نرجعها للقيم الأولى */
+  /* اختيارات قديمة محفوظة في المتصفح قد تحمل رقماً خارج القوائم بعد تحديث: نرجعها للقيم الأولى */
   function fixState(st) {
     if (typeof st.o !== 'number' || !OCC[st.o]) st.o = 0;
     if (typeof st.d !== 'number' || !DS[st.d]) st.d = 0;
@@ -386,7 +386,7 @@
     style();
     var wrap = el('div', 'mng'); wrap.style.width = '100%';
     var btn = el('button', 'mng-open', 'أهدِ من تحب'); btn.type = 'button';
-    btn.insertAdjacentHTML('afterbegin', ICON);   /* بعد textContent دائمًا، وإلا مُسحت الأيقونة */
+    btn.insertAdjacentHTML('afterbegin', ICON);   /* بعد textContent دائماً، وإلا مُسحت الأيقونة */
     var panel = el('div', 'mng-panel'); panel.style.display = 'none';
     wrap.appendChild(panel);
     if (row.classList.contains('checkout-buttons')) { btn.classList.add('mng-side'); row.appendChild(btn); } else wrap.insertBefore(btn, panel);
@@ -433,10 +433,10 @@
       api = buildForm(fh, st, {});
       var err = el('div', 'mng-err'); panel.appendChild(err);
       var go = el('button', 'mng-btn mng-b1', 'تبرّع وأهدِ'); go.type = 'button'; panel.appendChild(go);
-      panel.appendChild(el('div', 'mng-hint', 'بعد الدفع تظهر صفحة «أكمل هديتك» تلقائيًا. وإن لم تظهر، افتح: mmcm.sa/#hadiya-complete'));
+      panel.appendChild(el('div', 'mng-hint', 'بعد الدفع تظهر صفحة «أكمل هديتك» تلقائياً. وإن لم تظهر، افتح: mmcm.sa/#hadiya-complete'));
       go.onclick = function () {
         var e = api.validate();
-        if (!e && sh.length && pick < 0) { var av = Math.floor(+toEn(amt.value)); if (!(av >= minV)) e = 'اكتب مبلغًا لا يقل عن ' + minV + ' ريال.'; }
+        if (!e && sh.length && pick < 0) { var av = Math.floor(+toEn(amt.value)); if (!(av >= minV)) e = 'اكتب مبلغاً لا يقل عن ' + minV + ' ريال.'; }
         err.textContent = e; err.style.display = e ? 'block' : 'none'; if (e) return;
         var s = {}; for (var k in st) s[k] = st[k]; s.ts = Date.now(); ls('mn_gift', s);
         ev('add_to_cart');
@@ -492,7 +492,7 @@
     var body = el('div'); box.appendChild(body); ov.appendChild(box);
     var host = document.documentElement;
     host.appendChild(ov); host.style.overflow = 'hidden';
-    /* صفحات زد تعيد رسم الصفحة أحيانًا فتمسح النافذة: نعيدها ما لم يغلقها الزائر */
+    /* صفحات زد تعيد رسم الصفحة أحياناً فتمسح النافذة: نعيدها ما لم يغلقها الزائر */
     var keep = setInterval(function () { if (!closed && !ov.isConnected) { host.appendChild(ov); host.style.overflow = 'hidden'; } }, 400);
     return {ov:ov, body:body, close:close, allowClose:function () { x.style.display = ''; }};
   }
@@ -507,7 +507,7 @@
     return m ? m[1] : '';
   }
   function guessProject(order, st, cb) {
-    /* المتصفح نفسه يقرأ فاتورته (نفس الموقع) ليعرف المشروع فقط، ولا نحفظ منها شيئًا */
+    /* المتصفح نفسه يقرأ فاتورته (نفس الموقع) ليعرف المشروع فقط، ولا نحفظ منها شيئاً */
     fetch('/api/v1/orders/' + encodeURIComponent(order) + '/invoice', {credentials:'same-origin', headers:{Accept:'application/json'}})
       .then(function (r) { return r.json(); })
       .then(function (j) {
@@ -522,9 +522,9 @@
   function complete(order) {
     ev('complete_view');
     var o = overlay('أكمل هديتك', true), body = o.body;
-    var later = el('a', '', 'أكمل لاحقًا'); later.href = 'javascript:void 0';
+    var later = el('a', '', 'أكمل لاحقاً'); later.href = 'javascript:void 0';
     later.style.cssText = 'display:block;text-align:center;font-size:12.5px;color:#667085;margin-top:12px';
-    later.onclick = function () { if (window.confirm('يمكنك إكمال الهدية لاحقًا من الرابط: mmcm.sa/#hadiya-complete\nهل تريد الإغلاق الآن؟')) o.close(); };
+    later.onclick = function () { if (window.confirm('يمكنك إكمال الهدية لاحقاً من الرابط: mmcm.sa/#hadiya-complete\nهل تريد الإغلاق الآن؟')) o.close(); };
     o.ov.firstChild.appendChild(later);
     var saved = ls('mn_gift'), st = newState('');
     var fresh = saved && Date.now() - saved.ts < KEEP_MS;
@@ -630,9 +630,9 @@
       var sv = el('a', 'mng-btn mng-b2', 'حفظ صورة البطاقة'); sv.href = 'data:image/png;base64,' + b64; sv.download = 'hadiya-' + code + '.png';
       sv.onclick = function () { ev('save_img'); }; body.appendChild(sv);
       /* زر الحفظ لا يعمل داخل متصفح سناب وتيك توك وإنستقرام: الضغط المطوّل على الصورة يعمل في كل المتصفحات */
-      var svh = el('div', 'mng-hint', 'أو اضغط مطوّلًا على الصورة ثم احفظها.'); svh.style.textAlign = 'center'; body.appendChild(svh);
+      var svh = el('div', 'mng-hint', 'أو اضغط مطوّلاً على الصورة ثم احفظها.'); svh.style.textAlign = 'center'; body.appendChild(svh);
       if (done && done.o === order && done.c.length < 2) {
-        var more = el('button', 'mng-btn mng-b2', '🎁 أهدِ شخصًا ثانيًا من نفس التبرع'); more.type = 'button';
+        var more = el('button', 'mng-btn mng-b2', '🎁 أهدِ شخصاً ثانياً من نفس التبرع'); more.type = 'button';
         more.onclick = function () { start(); }; body.appendChild(more);
       }
       body.appendChild(el('div', 'mng-small', 'الرسالة تُرسل من واتسابك أنت، لا من رقم الجمعية. هذه بطاقة إهداء وليست إيصال تبرع · الرمز ' + code.slice(0, 4) + '-' + code.slice(4)));
@@ -647,8 +647,8 @@
     locked: 'محاولات كثيرة. حاول بعد ساعة.',
     review: 'لم نتمكن من إصدار البطاقة بهذا الاسم. اكتب الاسم بطريقة أخرى، أو تواصل مع الجمعية.',
     busy: 'البطاقة قيد التجهيز. انتظر دقيقة ثم أعد المحاولة.',
-    paused: 'الإهداء متوقف مؤقتًا. حاول لاحقًا.',
-    bad_name: 'الأسماء حروف فقط، حتى 25 حرفًا.',
+    paused: 'الإهداء متوقف مؤقتاً. حاول لاحقاً.',
+    bad_name: 'الأسماء حروف فقط، حتى 25 حرفاً.',
     bad_order: 'رابط التبرع غير صحيح.',
     unavailable: 'هذه البطاقة غير متاحة.',
     net: 'تعذّر الاتصال. تأكد من الإنترنت ثم أعد المحاولة.',
@@ -668,21 +668,21 @@
       if (!r || !r.ok) { var e = el('div', 'mng-dua', ERR[r && r.error] || ERR.unavailable); body.appendChild(e); return; }
       var slug = hasP(r.p) ? r.p : '', pName = PROJECTS[slug] || '';
       if (r.expired) {
-        body.appendChild(el('div', 'mng-dua', 'انتهت مدة عرض هذه البطاقة. جزى الله من أهداها خيرًا.'));
+        body.appendChild(el('div', 'mng-dua', 'انتهت مدة عرض هذه البطاقة. جزى الله من أهداها خيراً.'));
       } else {
         var res = el('div', 'mng-res'), im = el('img'); im.src = 'data:image/png;base64,' + r.img; im.alt = 'بطاقة الإهداء';
         res.appendChild(im); body.appendChild(res);
         body.appendChild(el('div', 'mng-dua', r.from ? 'شارك في عمارة بيوت الله كما شارك ' + r.from + '.' : 'شارك في عمارة بيوت الله.'));
       }
       if (slug) {
-        var d = el('a', 'mng-btn mng-b1', 'تبرّع أنت أيضًا في «' + pName + '»'); d.href = '/products/' + slug;
+        var d = el('a', 'mng-btn mng-b1', 'تبرّع أنت أيضاً في «' + pName + '»'); d.href = '/products/' + slug;
         d.onclick = function () { ev('recipient_donate'); }; body.appendChild(d);
         var g = el('a', 'mng-btn mng-b2', '🎁 أهدِ من تحب'); g.href = '/products/' + slug + '#hadiya-open';
         g.onclick = function () { ev('recipient_gift'); }; body.appendChild(g);
       }
       if (slug && !r.expired && r.from && !r.dead) {
         var t = el('a', 'mng-btn mng-bs', '💚 اشكر ' + r.from + ' في واتساب');
-        t.href = 'https://wa.me/?text=' + encodeURIComponent('جزاك الله خيرًا يا ' + r.from + ' على إهدائي أجر «' + pName + '» لمساجد مكة 💚');
+        t.href = 'https://wa.me/?text=' + encodeURIComponent('جزاك الله خيراً يا ' + r.from + ' على إهدائي أجر «' + pName + '» لمساجد مكة 💚');
         t.target = '_blank'; t.rel = 'noopener'; t.onclick = function () { ev('thank_click'); }; body.appendChild(t);
       }
       body.appendChild(el('div', 'mng-small', 'بطاقة إهداء، وليست إيصال تبرع · الرمز ' + code.slice(0, 4) + '-' + code.slice(4) + ' · جمعية منارات مكة للعناية بالمساجد'));
@@ -696,7 +696,7 @@
     var dn = ls('mn_gift_done'), red = ls('mn_gift_redir');
     var already = (dn && dn.o === order) || (red && red.c === order);
     if (saved && Date.now() - saved.ts < KEEP_MS && !already) {
-      var h = overlay('شكرًا لتبرعك 🤍', true);
+      var h = overlay('شكراً لتبرعك 🤍', true);
       h.body.appendChild(el('div', 'mng-spin', 'نجهّز بطاقة إهدائك…'));
       var t0 = Date.now(), gone = false, loaded = document.readyState === 'complete' ? t0 : 0;
       var go = function () { if (gone) return; gone = true; ls('mn_gift_redir', {c:order, ts:Date.now()}); location.replace('/#hadiya-complete'); };

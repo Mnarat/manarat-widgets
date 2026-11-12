@@ -37,7 +37,7 @@
 
     /* --- آخر التبرعات --- */
     donationsEnabled: true,
-    dataUrl: 'https://script.google.com/macros/s/AKfycbxOCyVW3p9Z9JifvgZ9etFPWniN_y4MbLh4gNbEvraTrEcuMuoqAp56iDRlGzNFxIBi/exec',                      // فارغ = «آخر التبرعات» معطّل. يُملأ برابط Google Apps Script خاص بمنارات (لا يُستخدم رابط هامة أبدًا)
+    dataUrl: 'https://script.google.com/macros/s/AKfycbxOCyVW3p9Z9JifvgZ9etFPWniN_y4MbLh4gNbEvraTrEcuMuoqAp56iDRlGzNFxIBi/exec',                      // فارغ = «آخر التبرعات» معطّل. يُملأ برابط Google Apps Script خاص بمنارات (لا يُستخدم رابط هامة أبداً)
     donationsTarget: 'after-reviews', // 'after-reviews' = مباشرة تحت صندوق التقييمات (أو قبل الفوتر إن لم يوجد)، أو CSS selector مثل 'footer'
     donateLink: '/products/daily-blessing',  // رابط زر «تبرّع الآن» (بركتك اليومية)
     homePaths: ['/'],
@@ -180,10 +180,10 @@
      ما ليس هنا يُكتب «بمناسبة + الاسم». الفارغ = بلا إضافة. */
   var OCC_SAY = {
     'إهداء عام': '',
-    'شكر وتقدير': 'شكرًا وتقديرًا',
-    'برّ الوالدين': 'برًّا بالوالدين',
+    'شكر وتقدير': 'شكراً وتقديراً',
+    'برّ الوالدين': 'برّاً بالوالدين',
     'دعاء لمريض بالشفاء': 'مع دعاء لمريض بالشفاء',
-    'الحمد لله على السلامة': 'حمدًا لله على السلامة'
+    'الحمد لله على السلامة': 'حمداً لله على السلامة'
   };
   function buildDonations(){
     var useDon = !!CFG.dataUrl, useGift = !!(CFG.giftsEnabled && CFG.giftFeedUrl);
@@ -194,7 +194,7 @@
     function ago(t){ var m=Math.max(0,Math.round((Date.now()-new Date(t))/60000)); if(m>CFG.timeMaxMin) return ''; if(m<1) return 'الآن'; return 'قبل '+m+' دقيقة'; }
     function isGift(d){ return d.t === 'gift'; }
     function urgent(d){ return !isGift(d) && !!(CFG.urgentWord && d.project && d.project.indexOf(CFG.urgentWord)>-1); }
-    /* الترتيب: التبرعات العاجلة أولًا (الأكبر ثم الأحدث كما كانت)، ثم التبرعات والإهداءات معًا من الأحدث إلى الأقدم */
+    /* الترتيب: التبرعات العاجلة أولاً (الأكبر ثم الأحدث كما كانت)، ثم التبرعات والإهداءات معاً من الأحدث إلى الأقدم */
     function rank(a,b){ var ua=urgent(a)?1:0, ub=urgent(b)?1:0; if(ua!==ub) return ub-ua; var am=Number(a.amount)||0, bm=Number(b.amount)||0, dt=new Date(b.time)-new Date(a.time);
       if(ua){ if(am!==bm) return bm-am; return dt; } if(dt) return dt; return bm-am; }
     function nm(d){ return CFG.showName && d.name ? d.name : 'فاعل خير'; }
@@ -252,7 +252,7 @@
       if (started || !items.length) return; started = true; var i = 0;
       (function next(){ if (count>=CFG.toastMax) return; if (!document.hidden && items.length){ showToast(items[i%items.length]); i++; count++; } setTimeout(next, CFG.toastEvery); })();
     }
-    /* المصدران يُجلبان معًا. إن فشل أحدهما بقي الآخر. وإن تأخر أحدهما أكثر من 5 ثوانٍ نعرض ما وصل ثم نحدّث عند وصوله */
+    /* المصدران يُجلبان معاً. إن فشل أحدهما بقي الآخر. وإن تأخر أحدهما أكثر من 5 ثوانٍ نعرض ما وصل ثم نحدّث عند وصوله */
     function paint(){ if (!okOnce) return; compute(); if (home) renderBox(); else setTimeout(runToasts, started?0:CFG.toastFirst); }
     function load(){
       var left = 0, late = false, tm = 0;
@@ -314,7 +314,7 @@
 })();
 
 /* MN-CSS-SYNC 2026-11-10: زد يقدّم لصفحات /products والفرص والتصنيفات والصفحات الداخلية نسخة قديمة مجمّدة من «كود CSS الخاص».
-   هذا الجزء ينسخ CSS المنشور من الرئيسية (المصدر الوحيد: سجل CSS في محرر الثيم) ويضيفه للصفحة إن كان ناقصًا. يُحفظ في المتصفح ساعة. */
+   هذا الجزء ينسخ CSS المنشور من الرئيسية (المصدر الوحيد: سجل CSS في محرر الثيم) ويضيفه للصفحة إن كان ناقصاً. يُحفظ في المتصفح ساعة. */
 (function(){
   var MARK='MN-CARD-LIKE-OLD', KEY='mn_css_sync_v1', TTL=3600000;
   function hasCurrent(){ var s=document.querySelectorAll('style'); for(var i=0;i<s.length;i++){ if(s[i].id!=='mn-css-sync' && s[i].textContent.indexOf(MARK)>-1) return true; } return false; }
@@ -342,7 +342,7 @@
      في صفحة «جاهز لرمضان» نفسها يُخفى الزر.
    - أبيض من شروق الشمس إلى غروبها في مكة، وكحلي في الليل.
    - زر «مشاركة» في عداد الرئيسية فقط، والرابط المُرسل يفتح الرئيسية وينزل إلى العداد (#ramadan).
-   - يختفي تلقائيًا مع دخول رمضان (8 فبراير 2027، 00:00 بتوقيت السعودية).
+   - يختفي تلقائياً مع دخول رمضان (8 فبراير 2027، 00:00 بتوقيت السعودية).
    - تعديل 2026-11-10 بعد التجربة الحية: (1) المحدِّد productBefore صار #nt_footer لأن شريط التواصل غير موجود في المتجر الحي،
      (2) الشاشات الكبيرة: النص والأرقام متجاوران في الوسط بدل الحافتين، (3) العرض 1366 ليطابق بطاقات الفرص.
    ============================================================ */
@@ -380,7 +380,7 @@
         '<div class="mn-rc-title" role="heading" aria-level="2">كم باقي على رمضان؟</div>'+
         '<p class="mn-rc-sub">شارك في تجهيز مساجد مكة قبل دخول الشهر الكريم.</p>'+
         '<ul class="mn-rc-dates"><li>الاثنين 8 فبراير 2027</li><li>1 رمضان 1448 هـ</li></ul>'+
-        '<p class="mn-rc-hint">حسب تقويم أم القرى، وقد يتغير يومًا واحدًا حسب رؤية الهلال.</p>'+
+        '<p class="mn-rc-hint">حسب تقويم أم القرى، وقد يتغير يوماً واحداً حسب رؤية الهلال.</p>'+
       '</div>'+
       '<div class="mn-rc-side">'+
         '<div class="mn-rc-tiles" role="timer" aria-label="الوقت الباقي على رمضان">'+
