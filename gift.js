@@ -157,6 +157,8 @@
     '.mng-small{font-size:11.5px;color:#667085;text-align:center;margin-top:10px}',
     '.mng-dua{text-align:center;color:' + NAVY + ';font-size:14.5px;margin-top:10px}',
     '.mng-msgbox{white-space:pre-wrap;background:#f8fafc;border:1px solid #eef1f4;border-radius:10px;padding:9px;font-size:13.5px;margin-top:8px}',
+    '.mng-mhead{display:flex;align-items:center;justify-content:space-between;gap:8px}.mng-mhead .mng-l{margin-bottom:5px}',
+    '.mng button.mng-tog{font:700 12.5px "Almarai",Tahoma,sans-serif!important;color:'+TEALD+'!important;background:none!important;border:0!important;padding:12px 2px 5px!important;cursor:pointer;box-shadow:none!important;width:auto!important;min-height:0!important}',
     '.mng-spin{text-align:center;color:' + NAVY + ';padding:30px 0;font-size:15px}',
     /* ثيم إيثار يمسح حدود وخلفيات الأزرار: نثبّتها */
     'button.mng-open,a.mng-cardlink{border:1.5px solid ' + NAVY + '!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important;box-shadow:none!important}',
@@ -253,11 +255,14 @@
     w.appendChild(el('div', 'mng-hint', 'الأسماء حروف فقط، بلا أرقام ولا روابط، حتى 25 حرفًا.'));
     w.appendChild(el('div', 'mng-priv', '🔒 الأسماء تظهر على البطاقة فقط، ولا تظهر في المتجر ولا في محركات البحث، وتُحذف بعد 90 يومًا. لا نطلب أي رقم جوال هنا.'));
 
-    w.appendChild(el('label', 'mng-l', 'نص رسالة واتساب (يمكنك تعديله)'));
-    var mIn = el('textarea'); mIn.rows = 3; mIn.maxLength = 300; w.appendChild(mIn);
+    var mHead = el('div', 'mng-mhead'); mHead.appendChild(el('label', 'mng-l', 'نص رسالة واتساب (يمكنك تعديله)'));
+    var mTog = el('button', 'mng-tog', st.mOpen ? 'إخفاء ▴' : 'إظهار ▾'); mTog.type = 'button'; mHead.appendChild(mTog); w.appendChild(mHead);
+    var mBox = el('div'); mBox.style.display = st.mOpen ? 'block' : 'none'; w.appendChild(mBox);
+    var mIn = el('textarea'); mIn.rows = 3; mIn.maxLength = 300; mBox.appendChild(mIn);
     var mRow = el('div', 'mng-hint'); var mCnt = el('span'); var mRst = el('a', '', ' · إرجاع النص المقترح');
-    mRst.href = 'javascript:void 0'; mRst.style.color = TEALD; mRow.appendChild(mCnt); mRow.appendChild(mRst); w.appendChild(mRow);
-    var lockL = el('div', 'mng-lock'); w.appendChild(lockL);
+    mRst.href = 'javascript:void 0'; mRst.style.color = TEALD; mRow.appendChild(mCnt); mRow.appendChild(mRst); mBox.appendChild(mRow);
+    var lockL = el('div', 'mng-hint', 'سيُضاف رابط البطاقة تلقائيًا في آخر رسالتك بعد التبرع.'); mBox.appendChild(lockL);
+    mTog.onclick = function () { st.mOpen = !st.mOpen; mBox.style.display = st.mOpen ? 'block' : 'none'; mTog.textContent = st.mOpen ? 'إخفاء ▴' : 'إظهار ▾'; };
     w.appendChild(el('label', 'mng-l', 'معاينة البطاقة'));
     var pv = el('div'); w.appendChild(pv);
     w.appendChild(el('div', 'mng-hint', 'كلمة «معاينة» داخل الصورة نفسها. البطاقة النظيفة تصنعها الجمعية بعد التأكد من الدفع.'));
@@ -299,7 +304,6 @@
       fIn.disabled = !!st.anon;
       if (!st.edited) mIn.value = autoMsg(st, pName);
       mCnt.textContent = mIn.value.length + ' / 300';
-      lockL.textContent = 'يُضاف تلقائيًا ولا يُعدَّل: ' + linkLine(st);
       pv.innerHTML = ''; pv.appendChild(cardPreview(st, pName));
       if (opts.onChange) opts.onChange(st);
     }
@@ -373,7 +377,14 @@
             var b = el('button', 'mng-chip' + (i === pick ? ' on' : ''), x.t.indexOf(String(x.v)) >= 0 ? x.t : x.t + ' ' + x.v + ' ريال');
             b.type = 'button'; b.onclick = function () { pick = i; drawSh(); }; shBox.appendChild(b);
           });
+          var ob = el('button', 'mng-chip' + (pick < 0 ? ' on' : ''), 'مبلغ آخر'); ob.type = 'button';
+          ob.onclick = function () { pick = -1; drawSh(); setTimeout(function () { amt.focus(); }, 50); }; shBox.appendChild(ob);
+          amtWrap.style.display = pick < 0 ? 'block' : 'none';
         };
+        var minV = sh.reduce(function (m, x) { return Math.min(m, x.v); }, sh[0].v);
+        var amtWrap = el('div'), amt = el('input'); amt.type = 'number'; amt.inputMode = 'numeric'; amt.min = minV; amt.step = 1;
+        amt.placeholder = 'اكتب المبلغ بالريال (' + minV + ' أو أكثر)'; amtWrap.style.marginTop = '8px'; amtWrap.appendChild(amt);
+        panel.appendChild(amtWrap);
         drawSh();
       }
       var fh = el('div'); panel.appendChild(fh);
@@ -382,13 +393,17 @@
       var go = el('button', 'mng-btn mng-b1', 'تبرّع وأهدِ'); go.type = 'button'; panel.appendChild(go);
       panel.appendChild(el('div', 'mng-hint', 'بعد الدفع تظهر صفحة «أكمل هديتك» تلقائيًا. وإن لم تظهر، افتح: mmcm.sa/#hadiya-complete'));
       go.onclick = function () {
-        var e = api.validate(); err.textContent = e; err.style.display = e ? 'block' : 'none'; if (e) return;
+        var e = api.validate();
+        if (!e && sh.length && pick < 0) { var av = Math.floor(+amt.value); if (!(av >= minV)) e = 'اكتب مبلغًا لا يقل عن ' + minV + ' ريال.'; }
+        err.textContent = e; err.style.display = e ? 'block' : 'none'; if (e) return;
         var s = {}; for (var k in st) s[k] = st[k]; s.ts = Date.now(); ls('mn_gift', s);
         ev('add_to_cart');
         if (sh.length) {
-          var x = sh[pick]; try { x.r.checked = true; x.r.click(); } catch (z) {}
+          var val = pick < 0 ? Math.floor(+amt.value) : sh[pick].v;
+          if (pick >= 0) { try { sh[pick].r.checked = true; sh[pick].r.click(); } catch (z) {} }
+          else $$('input[name="qnty_choose"]', form).forEach(function (r) { r.checked = false; });
           var q = $('#product-quantity', form);
-          if (q) { q.value = x.v; q.dispatchEvent(new Event('input', {bubbles:true})); q.dispatchEvent(new Event('change', {bubbles:true})); }
+          if (q) { q.value = val; q.dispatchEvent(new Event('input', {bubbles:true})); q.dispatchEvent(new Event('change', {bubbles:true})); }
         }
         go.disabled = true; go.textContent = 'جارٍ الإضافة للسلة…';
         setTimeout(function () {
