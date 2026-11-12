@@ -2,7 +2,7 @@
    manarat-widgets.js — جمعية منارات مكة للعناية بالمساجد (متجر زد mmcm.sa)
    منقول من hamah-widgets.js (هامة) بإعدادات منارات. ملف واحد يبني:
    (1) صندوق «كلمات من أهل الخير» (يظهر فقط إذا وُجدت تقييمات حقيقية في قسم «آراء العملاء» بالثيم)
-   (2) «آخر التبرعات»: صندوق في الرئيسية + إشعار في الداخلية (معطّل حتى يُضبط dataUrl بمصدر بيانات منارات)
+   (2) «آخر التبرعات والإهداءات»: صندوق في الرئيسية + إشعار في الداخلية. مصدران: التبرعات (dataUrl) والإهداءات (giftFeedUrl)، وأيهما تعطّل يظهر الآخر
    (3) نص الوصف المختصر تحت اسم المشروع في بطاقات الفرص
    يُحمَّل من كود JS الثيم (var hv=2) عبر jsDelivr برقم commit كامل، لا @main.
    ============================================================ */
@@ -47,7 +47,12 @@
     show: 5, rotateMs: 3500, refreshMs: 60000,
     minAmount: 20, urgentWord: 'عاجل', timeMaxMin: 60,
     maxAgeHours: 72, fallback: true, fallbackDays: 90,
-    toastFirst: 6000, toastEvery: 20000, toastStay: 6000, toastMax: 5
+    toastFirst: 6000, toastEvery: 20000, toastStay: 6000, toastMax: 5,
+
+    /* --- الإهداءات داخل «آخر التبرعات والإهداءات» --- */
+    giftsEnabled: true,               // false = الصندوق والإشعار للتبرعات فقط
+    giftFeedUrl: 'https://script.google.com/macros/s/AKfycbzhHWK26ak8ucCVJDBRm8XSMSBSXGg5GAzFPwDt5mvDk8lPJcG9djh4_72PKwtqZI11tA/exec?a=feed',   // سكربت «أهدِ من تحب» نفسه (API في gift.js) + ?a=feed
+    giftRefreshMs: 300000             // الإهداءات تُحدَّث كل 5 دقائق (أخف على سكربت الإهداء)
   };
   /* ===================================================================== */
 
@@ -99,8 +104,13 @@
 .hm-live-cta{text-align:center;margin-top:18px}\
 .hm-live-cta a{display:inline-block;background:var(--c);color:#fff;text-decoration:none;padding:12px 32px;border-radius:40px;font-size:16px;transition:.3s}\
 .hm-live-empty{color:#777;text-align:center;padding:30px 0;font-size:15px}\
+.hm-live-av.hm-av-don,.hm-toast-ic.hm-av-don{background:#E0F5F3}\
+.hm-live-av.hm-av-gift,.hm-toast-ic.hm-av-gift{background:#FFF1DC}\
+.hm-ic{display:block;width:24px;height:24px;flex:0 0 auto}\
+.hm-toast-ic .hm-ic{width:28px;height:28px}\
+@media (prefers-reduced-motion:no-preference){@keyframes hmBeat{0%,100%{transform:scale(1)}25%{transform:scale(1.07)}50%{transform:scale(1)}}.hm-toast-ic .hm-ic-gift g{transform-box:fill-box;transform-origin:center bottom;animation:hmBeat 2.8s ease-in-out infinite}}\
 @media(max-width:600px){.hm-live-item{flex-wrap:wrap}.hm-live-time{width:100%;margin:4px 0 0;text-align:left}}\
-.hm-toast{position:fixed;bottom:24px;left:24px;z-index:99999;direction:rtl;font-family:'+CFG.font+';display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:14px 18px 14px 22px;min-width:300px;max-width:min(420px,calc(100vw - 48px));box-shadow:0 10px 30px rgba(0,0,0,.14);border-right:5px solid '+CFG.color+';transform:translateY(140%);opacity:0;transition:transform .55s cubic-bezier(.2,.9,.3,1.2),opacity .4s}\
+.hm-toast{position:fixed;bottom:24px;left:24px;z-index:99999;direction:rtl;font-family:'+CFG.font+';display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:14px 18px 14px 34px;min-width:300px;max-width:min(420px,calc(100vw - 48px));box-shadow:0 10px 30px rgba(0,0,0,.14);border-right:5px solid '+CFG.color+';transform:translateY(140%);opacity:0;transition:transform .55s cubic-bezier(.2,.9,.3,1.2),opacity .4s}\
 .hm-toast.show{transform:none;opacity:1}\
 .hm-toast-ic{width:48px;height:48px;border-radius:50%;background:#E0F5F3;display:grid;place-items:center;font-size:22px;flex:0 0 48px}\
 .hm-toast-body{flex:1;min-width:0}.hm-toast-t{color:#222;font-size:15px;line-height:1.5;font-weight:500}.hm-toast-t b{color:'+CFG.color+';font-weight:700}\
@@ -162,19 +172,47 @@
     addEventListener('resize',function(){buildDots();go(0);}); buildDots(); go(0); restart();
   }
 
-  /* ===================== 2) آخر التبرعات ===================== */
+  /* ===================== 2) آخر التبرعات والإهداءات ===================== */
+  /* أيقونة التبرع: قلب فيروزي فوق كف كحلية (ألوان الهوية). أيقونة الإهداء: نفس هدية «أهدِ من تحب» في gift.js */
+  var IC_DON = '<svg class="hm-ic" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 33C32 33 18 24.5 18 15.5C18 10.5 21.8 7 26 7C28.6 7 30.9 8.4 32 10.6C33.1 8.4 35.4 7 38 7C42.2 7 46 10.5 46 15.5C46 24.5 32 33 32 33Z" fill="#00B5A7"/><rect x="5" y="38" width="9" height="19" rx="2.5" fill="#052560"/><path d="M17 40H25C27.6 40 30 40.9 32 42.4L34.2 44H41C43.2 44 45 45.6 45 47.6C45 47.9 45 48.2 44.9 48.5L53.6 44.6C55.7 43.7 58.1 44.6 59 46.6C59.8 48.5 59 50.7 57.2 51.7L41.5 59.6C39.2 60.8 36.5 61 34 60.3L17 55.6Z" fill="#052560"/></svg>';
+  var IC_GIFT = '<svg class="hm-ic hm-ic-gift" viewBox="0 0 64 64" aria-hidden="true"><g><rect x="14" y="30" width="36" height="25" rx="4" fill="#E53935"/><rect x="14" y="32" width="36" height="3" fill="#7A1515" fill-opacity=".45"/><rect x="29" y="35" width="6" height="20" fill="#F5B52A"/><rect x="10" y="22" width="44" height="10" rx="3" fill="#C62828"/><rect x="28" y="22" width="8" height="10" fill="#F5B52A"/><path d="M32 22C25 22 17 20 17 14.5C17 10 23 10 26 13.5C29 17 32 22 32 22Z" fill="none" stroke="#F5B52A" stroke-width="3" stroke-linejoin="round"/><path d="M32 22C39 22 47 20 47 14.5C47 10 41 10 38 13.5C35 17 32 22 32 22Z" fill="none" stroke="#F5B52A" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="22" r="4" fill="#F5A300"/></g></svg>';
+  /* صياغة المناسبة بعد «أُهدي تبرّع في «المشروع»». المفتاح = اسم المناسبة كما يرجعه سكربت الإهداء.
+     ما ليس هنا يُكتب «بمناسبة + الاسم». الفارغ = بلا إضافة. */
+  var OCC_SAY = {
+    'إهداء عام': '',
+    'شكر وتقدير': 'شكرًا وتقديرًا',
+    'برّ الوالدين': 'برًّا بالوالدين',
+    'دعاء لمريض بالشفاء': 'مع دعاء لمريض بالشفاء',
+    'الحمد لله على السلامة': 'حمدًا لله على السلامة'
+  };
   function buildDonations(){
-    if (!CFG.donationsEnabled || !CFG.dataUrl) return;
+    var useDon = !!CFG.dataUrl, useGift = !!(CFG.giftsEnabled && CFG.giftFeedUrl);
+    if (!CFG.donationsEnabled || (!useDon && !useGift)) return;
     var p = path(); if (CFG.skipPaths.some(function(s){ return p.indexOf(s)===0; })) return;
-    var home = isHome(), DON = [], items = [], pastMode = false, ptr = 0, timer, box, list, head;
+    var home = isHome(), DON = [], GIFTS = [], items = [], pastMode = false, ptr = 0, timer, box, list, head, okOnce = false, lastGift = 0;
     function fmt(n){ return Number(n).toLocaleString('en-US')+' ريال'; }
     function ago(t){ var m=Math.max(0,Math.round((Date.now()-new Date(t))/60000)); if(m>CFG.timeMaxMin) return ''; if(m<1) return 'الآن'; return 'قبل '+m+' دقيقة'; }
-    function urgent(d){ return !!(CFG.urgentWord && d.project && d.project.indexOf(CFG.urgentWord)>-1); }
-    function rank(a,b){ var ua=urgent(a)?1:0, ub=urgent(b)?1:0; if(ua!==ub) return ub-ua; var am=Number(a.amount)||0, bm=Number(b.amount)||0; if(am!==bm) return bm-am; return new Date(b.time)-new Date(a.time); }
+    function isGift(d){ return d.t === 'gift'; }
+    function urgent(d){ return !isGift(d) && !!(CFG.urgentWord && d.project && d.project.indexOf(CFG.urgentWord)>-1); }
+    /* الترتيب: التبرعات العاجلة أولًا (الأكبر ثم الأحدث كما كانت)، ثم التبرعات والإهداءات معًا من الأحدث إلى الأقدم */
+    function rank(a,b){ var ua=urgent(a)?1:0, ub=urgent(b)?1:0; if(ua!==ub) return ub-ua; var am=Number(a.amount)||0, bm=Number(b.amount)||0, dt=new Date(b.time)-new Date(a.time);
+      if(ua){ if(am!==bm) return bm-am; return dt; } if(dt) return dt; return bm-am; }
     function nm(d){ return CFG.showName && d.name ? d.name : 'فاعل خير'; }
+    /* الإهداء: لا نأخذ من المصدر إلا المشروع والمناسبة والوقت. لا أسماء ولا رموز ولا مبالغ (وعد لوحة الإهداء) */
+    function cleanGift(g){ return { t:'gift', project:String(g.project||''), occ:String(g.occ||''), dead:!!g.dead, time:g.time }; }
+    function giftHtml(d){
+      var pr = d.project ? ' في <b>«'+esc(d.project)+'»</b>' : '';
+      if (d.dead) return '<b>صدقة عن متوفى</b>'+pr;
+      var say = Object.prototype.hasOwnProperty.call(OCC_SAY, d.occ) ? OCC_SAY[d.occ] : (d.occ ? 'بمناسبة '+d.occ : '');
+      return '<b>أُهدي تبرّع</b>'+pr+(say ? ' '+esc(say) : '');
+    }
+    /* الصدقة عن متوفى تأخذ أيقونة التبرع الهادئة، لا علبة الهدية */
+    function avCls(d){ return isGift(d) && !d.dead ? 'hm-av-gift' : 'hm-av-don'; }
+    function avIc(d){ return isGift(d) && !d.dead ? IC_GIFT : IC_DON; }
     function compute(){
       var now = Date.now();
-      var ok = DON.filter(function(d){ return d && d.time && (Number(d.amount)||0) >= CFG.minAmount; });
+      var ok = DON.filter(function(d){ return d && d.time && !isNaN(new Date(d.time)) && (Number(d.amount)||0) >= CFG.minAmount; })   /* minAmount للتبرعات فقط */
+        .concat(GIFTS.filter(function(g){ return g && g.time && !isNaN(new Date(g.time)); }));
       items = ok.filter(function(d){ return (now-new Date(d.time)) < CFG.maxAgeHours*3600000; }).sort(rank);
       pastMode = false;
       if (!items.length && CFG.fallback){
@@ -182,25 +220,29 @@
       }
     }
     /* --- الصندوق (الرئيسية) --- */
-    function card(d){ return el('div','hm-live-item','<span class="hm-live-av">🤲</span><span class="hm-live-txt"><b>'+esc(nm(d))+'</b> تبرّع'+(d.project?' لـ <b>'+esc(d.project)+'</b>':'')+'</span>'+
-      (CFG.hideAmount||!d.amount?'':'<span class="hm-live-amt">'+fmt(d.amount)+'</span>')+(pastMode||!ago(d.time)?'':'<span class="hm-live-time">'+ago(d.time)+'</span>')); }
+    function card(d){
+      var time = pastMode||!ago(d.time)?'':'<span class="hm-live-time">'+ago(d.time)+'</span>', av = '<span class="hm-live-av '+avCls(d)+'">'+avIc(d)+'</span>';
+      if (isGift(d)) return el('div','hm-live-item', av+'<span class="hm-live-txt">'+giftHtml(d)+'</span>'+time);
+      return el('div','hm-live-item', av+'<span class="hm-live-txt"><b>'+esc(nm(d))+'</b> تبرّع'+(d.project?' لـ <b>'+esc(d.project)+'</b>':'')+'</span>'+
+        (CFG.hideAmount||!d.amount?'':'<span class="hm-live-amt">'+fmt(d.amount)+'</span>')+time); }
     function renderBox(){
       if (!box){ box = el('section','hm-live'); box.setAttribute('dir','rtl');
-        box.innerHTML='<div class="hm-live-box"><div class="hm-live-head"><span class="hm-pulse"></span><h3>آخر التبرعات</h3></div><div class="hm-live-list"></div><div class="hm-live-cta"><a href="'+esc(CFG.donateLink)+'">شارك أهل الخير وتبرّع الآن</a></div></div>';
+        box.innerHTML='<div class="hm-live-box"><div class="hm-live-head"><span class="hm-pulse"></span><h3>آخر التبرعات والإهداءات</h3></div><div class="hm-live-list"></div><div class="hm-live-cta"><a href="'+esc(CFG.donateLink)+'">شارك أهل الخير وتبرّع الآن</a></div></div>';
         if (CFG._afterReviews) CFG._afterReviews.parentNode.insertBefore(box, CFG._afterReviews); else mount(CFG.donationsTarget === 'after-reviews' ? 'footer' : CFG.donationsTarget, box);
         list = box.querySelector('.hm-live-list'); head = box.querySelector('h3');
         list.parentNode.addEventListener('mouseenter',function(){clearInterval(timer);}); list.parentNode.addEventListener('mouseleave',renderBox); }
-      clearInterval(timer); list.innerHTML=''; head.textContent = pastMode ? 'من تبرعات الأيام الماضية' : 'آخر التبرعات';
-      if (!items.length){ list.innerHTML='<p class="hm-live-empty">كن أول المتبرعين اليوم 🤍</p>'; return; }
-      var n=Math.min(CFG.show, items.length); for(var i=n-1;i>=0;i--) list.prepend(card(items[i])); ptr=n%items.length;
-      if (items.length>CFG.show) timer=setInterval(function(){ list.prepend(card(items[ptr])); ptr=(ptr+1)%items.length; while(list.children.length>CFG.show) list.removeChild(list.lastChild); }, CFG.rotateMs);
+      clearInterval(timer); list.innerHTML=''; head.textContent = pastMode ? 'من تبرعات وإهداءات الأيام الماضية' : 'آخر التبرعات والإهداءات';
+      if (!items.length){ list.innerHTML='<p class="hm-live-empty">كن أول من يتبرّع أو يُهدي اليوم 🤍</p>'; return; }
+      var n=Math.min(CFG.show, items.length); for(var i=n-1;i>=0;i--){ var c0=card(items[i]); c0.setAttribute('data-k',i); list.prepend(c0); } ptr=n%items.length;
+      if (items.length>CFG.show) timer=setInterval(function(){ var k=ptr%items.length, c=card(items[k]); c.setAttribute('data-k',k); var old=list.querySelector('[data-k="'+k+'"]'); if(old) list.removeChild(old); list.prepend(c); ptr=(ptr+1)%items.length; while(list.children.length>CFG.show) list.removeChild(list.lastChild); }, CFG.rotateMs);
     }
     /* --- الإشعار (الداخلية) --- */
     var toastEl, toastTimer, count = 0, started = false;
     function showToast(d){
       if (!toastEl){ toastEl = el('div','hm-toast'); toastEl.setAttribute('role','status'); document.body.appendChild(toastEl); }
-      var sub = []; if (d.city) sub.push('📍 '+esc(d.city)); sub.push(esc(CFG.orgName)); if (!pastMode && ago(d.time)) sub.push(ago(d.time));
-      toastEl.innerHTML = '<span class="hm-toast-ic">🤲</span><div class="hm-toast-body"><div class="hm-toast-t"><b>'+esc(nm(d))+'</b> تبرّع'+(CFG.hideAmount||!d.amount?'':' بـ <b>'+fmt(d.amount)+'</b>')+(d.project?' لـ <b>'+esc(d.project)+'</b>':'')+'</div><div class="hm-toast-s">'+sub.join(' <span>•</span> ')+'</div></div>'+
+      var sub = []; if (!isGift(d) && d.city) sub.push('📍 '+esc(d.city)); sub.push(esc(CFG.orgName)); if (!pastMode && ago(d.time)) sub.push(ago(d.time));
+      var txt = isGift(d) ? giftHtml(d) : '<b>'+esc(nm(d))+'</b> تبرّع'+(CFG.hideAmount||!d.amount?'':' بـ <b>'+fmt(d.amount)+'</b>')+(d.project?' لـ <b>'+esc(d.project)+'</b>':'');
+      toastEl.innerHTML = '<span class="hm-toast-ic '+avCls(d)+'">'+avIc(d)+'</span><div class="hm-toast-body"><div class="hm-toast-t">'+txt+'</div><div class="hm-toast-s">'+sub.join(' <span>•</span> ')+'</div></div>'+
         '<button class="hm-toast-x" aria-label="إغلاق">✕</button><span class="hm-toast-bar" style="animation-duration:'+CFG.toastStay+'ms"></span>';
       toastEl.querySelector('.hm-toast-x').onclick = function(){ toastEl.classList.remove('show'); count = CFG.toastMax; };
       requestAnimationFrame(function(){ toastEl.classList.add('show'); });
@@ -208,10 +250,20 @@
     }
     function runToasts(){
       if (started || !items.length) return; started = true; var i = 0;
-      (function next(){ if (count>=CFG.toastMax) return; if (!document.hidden){ showToast(items[i%items.length]); i++; count++; } setTimeout(next, CFG.toastEvery); })();
+      (function next(){ if (count>=CFG.toastMax) return; if (!document.hidden && items.length){ showToast(items[i%items.length]); i++; count++; } setTimeout(next, CFG.toastEvery); })();
     }
+    /* المصدران يُجلبان معًا. إن فشل أحدهما بقي الآخر. وإن تأخر أحدهما أكثر من 5 ثوانٍ نعرض ما وصل ثم نحدّث عند وصوله */
+    function paint(){ if (!okOnce) return; compute(); if (home) renderBox(); else setTimeout(runToasts, started?0:CFG.toastFirst); }
     function load(){
-      fetch(CFG.dataUrl, {cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){ DON = Array.isArray(j)?j:(j.data||[]); compute(); home ? renderBox() : (setTimeout(runToasts, started?0:CFG.toastFirst)); }).catch(function(){});
+      var left = 0, late = false, tm = 0;
+      function end(){ left--; if (left <= 0 || late){ clearTimeout(tm); paint(); } }
+      var doGift = useGift && (Date.now() - lastGift >= (CFG.giftRefreshMs||0) - 1000);
+      if (useDon) left++; if (doGift) left++;
+      if (!left) return;
+      if (left > 1) tm = setTimeout(function(){ late = true; paint(); }, 5000);
+      if (useDon) fetch(CFG.dataUrl, {cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){ DON = Array.isArray(j)?j:((j&&j.data)||[]); okOnce = true; }).catch(function(){}).then(end);
+      if (doGift){ lastGift = Date.now();
+        fetch(CFG.giftFeedUrl, {cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){ if (Array.isArray(j)){ GIFTS = j.filter(function(g){ return g && g.t === 'gift'; }).map(cleanGift); okOnce = true; } }).catch(function(){}).then(end); }
     }
     load(); setInterval(load, CFG.refreshMs);
   }
