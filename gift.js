@@ -61,6 +61,8 @@
     if (!s) { var el = document.querySelector('script[src*="manarat-widgets"][src*="gift.js"]'); s = el && el.src; }
     return s ? s.replace(/gift\.js(\?.*)?$/, '') : 'https://cdn.jsdelivr.net/gh/Mnarat/manarat-widgets@main/';
   })();
+  function toEn(v) { return String(v || '').replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); }).replace(/[^0-9.]/g, ''); }
+  function hasP(k) { return !!k && Object.prototype.hasOwnProperty.call(PROJECTS, k); }
   function img(d, th) { return BASE + 'img/gift/' + DS[d][0] + '-' + (th ? 'l' : 'd') + '.jpg'; }
 
   /* ===================== أدوات ===================== */
@@ -126,7 +128,7 @@
     '.mng-sw.more{background:#fff;border:1.5px dashed ' + TEAL + '}.mng-sw.more span{color:' + NAVY + ';text-shadow:none;bottom:14px}',
     '.mng input[type=text],.mng textarea,.mng select{width:100%;font:inherit;font-size:15px;padding:9px 11px;border:1px solid #d5dde6;border-radius:10px;background:#fff;color:#1d2939}',
     '.mng textarea{resize:vertical;font-size:14px}',
-    '.mng input[type=number]{width:100%!important;font:inherit!important;font-size:15px!important;padding:9px 11px!important;border:1px solid #d5dde6!important;border-radius:10px!important;background:#fff!important;color:#1d2939!important;height:auto!important;text-align:right!important}',
+    '.mng input[inputmode=numeric]{width:100%!important;font:inherit!important;font-size:15px!important;padding:9px 11px!important;border:1px solid #d5dde6!important;border-radius:10px!important;background:#fff!important;color:#1d2939!important;height:auto!important;text-align:right!important}',
     '.mng input::placeholder,.mng textarea::placeholder{color:#98a2b3!important;opacity:1!important}',
     '.mng-chk{display:flex;gap:8px;align-items:center;font-size:13.5px;margin-top:8px;cursor:pointer}',
     '.mng-hint{font-size:12px;color:#5b6b80;margin-top:6px}',
@@ -161,6 +163,7 @@
     '.mng-msgbox{white-space:pre-wrap;background:#f8fafc;border:1px solid #eef1f4;border-radius:10px;padding:9px;font-size:13.5px;margin-top:8px}',
     '.mng-mhead{display:flex;align-items:baseline;justify-content:flex-start;gap:10px}.mng-mhead .mng-l{margin-bottom:5px}',
     '.mng button.mng-tog{font:700 12.5px "Almarai",Tahoma,sans-serif!important;color:'+TEALD+'!important;background:none!important;border:0!important;padding:12px 2px 5px!important;cursor:pointer;box-shadow:none!important;width:auto!important;min-height:0!important}',
+    'button.mng-open.mng-pulse{animation-duration:.9s!important}',
     '@keyframes mngp{0%,100%{box-shadow:0 0 0 0 rgba(0,181,167,0)}50%{box-shadow:0 0 0 7px rgba(0,181,167,.38),0 0 18px rgba(0,181,167,.45)}}',
     'button.mng-open{animation:mngp 2.2s ease-in-out infinite}button.mng-open.on{animation:none}',
     '.mng label.mng-wal{color:#0B8F4D!important;font-size:14.5px!important;font-weight:800!important;background:#E7F8EE;border-radius:8px;padding:3px 9px;display:inline-block}',
@@ -391,7 +394,7 @@
           amtWrap.style.display = pick < 0 ? 'block' : 'none';
         };
         var minV = 1;
-        var amtWrap = el('div'), amt = el('input'); amt.type = 'number'; amt.inputMode = 'numeric'; amt.min = minV; amt.step = 1;
+        var amtWrap = el('div'), amt = el('input'); amt.type = 'text'; amt.inputMode = 'numeric'; amt.setAttribute('dir', 'ltr'); amt.min = minV; amt.step = 1;
         var setMin = function (m) { minV = m; amt.min = m; amt.placeholder = 'اكتب المبلغ بالريال (' + m + ' أو أكثر)'; }; setMin(1);
         fetch('/api/v1/products/' + form.id.replace('product-form-', ''), {headers:{Accept:'application/json'}}).then(function (r) { return r.json(); })
           .then(function (j) { var p = j && j.data && j.data.product, m = p && +p.min_quantity_per_cart; if (m > 0) setMin(m); }).catch(function () {});
@@ -406,12 +409,12 @@
       panel.appendChild(el('div', 'mng-hint', 'بعد الدفع تظهر صفحة «أكمل هديتك» تلقائيًا. وإن لم تظهر، افتح: mmcm.sa/#hadiya-complete'));
       go.onclick = function () {
         var e = api.validate();
-        if (!e && sh.length && pick < 0) { var av = Math.floor(+amt.value); if (!(av >= minV)) e = 'اكتب مبلغًا لا يقل عن ' + minV + ' ريال.'; }
+        if (!e && sh.length && pick < 0) { var av = Math.floor(+toEn(amt.value)); if (!(av >= minV)) e = 'اكتب مبلغًا لا يقل عن ' + minV + ' ريال.'; }
         err.textContent = e; err.style.display = e ? 'block' : 'none'; if (e) return;
         var s = {}; for (var k in st) s[k] = st[k]; s.ts = Date.now(); ls('mn_gift', s);
         ev('add_to_cart');
         if (sh.length) {
-          var val = pick < 0 ? Math.floor(+amt.value) : sh[pick].v;
+          var val = pick < 0 ? Math.floor(+toEn(amt.value)) : sh[pick].v;
           if (pick >= 0) { try { sh[pick].r.checked = true; sh[pick].r.click(); } catch (z) {} }
           else $$('input[name="qnty_choose"]', form).forEach(function (r) { r.checked = false; });
           var q = $('#product-quantity', form);
@@ -441,7 +444,7 @@
       if (c.getAttribute('data-mng')) return;
       var a = $('a[href*="/products/"]', c); if (!a) return;
       var m = a.getAttribute('href').match(/\/products\/([^\/?#]+)/); if (!m) return;
-      var slug = decodeURIComponent(m[1]); if (!PROJECTS[slug]) return;
+      var slug = decodeURIComponent(m[1]); if (!hasP(slug)) return;
       var row = $('.checkout-buttons', c); if (!row) return;
       c.setAttribute('data-mng', '1'); style();
       var l = el('a', 'mng-cardlink', '🎁 أهدِ من تحب'); l.href = '/products/' + slug + '#hadiya-open';
@@ -482,7 +485,9 @@
       .then(function (j) {
         var prods = (j && (j.data && j.data.order && j.data.order.products || j.order && j.order.products || j.products)) || [];
         var names = prods.map(function (p) { var n = p && p.name; return typeof n === 'object' ? (n && (n.ar || n.en)) : n; }).join(' ');
-        for (var s in PROJECTS) if (names.indexOf(PROJECTS[s]) >= 0) { st.p = s; break; }
+        if (names && !(hasP(st.p) && names.indexOf(PROJECTS[st.p]) >= 0)) {
+          st.p = ''; for (var s in PROJECTS) if (names.indexOf(PROJECTS[s]) >= 0) { st.p = s; break; }
+        }
         cb();
       }).catch(function () { cb(); });
   }
@@ -497,6 +502,7 @@
     var fresh = saved && Date.now() - saved.ts < KEEP_MS;
     if (fresh) for (var k in saved) if (k in st) st[k] = saved[k];
     var done = ls('mn_gift_done');
+    if (done && done.ts && Date.now() - done.ts > 90 * 864e5) { ls('mn_gift_done', null); done = null; }
     if (!order) { var so = ls('mn_gift_ord'); if (so && Date.now() - so.ts < 7 * 864e5) order = so.c; }
 
     function askOrder() {
@@ -524,12 +530,12 @@
         body.appendChild(el('div', 'mng-hint', 'ويمكنك إهداء شخص ثانٍ من نفس التبرع:'));
         st.to = ''; st.fem = false; st.edited = 0;
       }
-      if (!st.p) { body.appendChild(el('div', 'mng-spin', 'لحظة…')); guessProject(order, st, form); } else form();
+      body.appendChild(el('div', 'mng-spin', 'لحظة…')); guessProject(order, st, form);
     }
     function form() {
       if (body.lastChild && body.lastChild.className === 'mng-spin') body.removeChild(body.lastChild);
       var fh = el('div'); body.appendChild(fh);
-      var api = buildForm(fh, st, {pickProject: !st.p});
+      var api = buildForm(fh, st, {pickProject: !st.p || st.forcePick});
       var e = el('div', 'mng-err'); body.appendChild(e);
       var b = el('button', 'mng-btn mng-b1', 'أصدر البطاقة'); b.type = 'button'; body.appendChild(b);
       b.onclick = function () {
@@ -548,6 +554,7 @@
           .catch(function () { fail('net'); });
         function fail(code) {
           b.disabled = false; b.textContent = 'أصدر البطاقة';
+          if (code === 'wrong_project') { st.p = ''; st.forcePick = 1; body.innerHTML = ''; form(); var e2 = body.querySelector('.mng-err'); if (e2) { e2.textContent = ERR[code]; e2.style.display = 'block'; } return; }
           e.textContent = ERR[code] || ERR.server; e.style.display = 'block';
         }
       };
@@ -579,7 +586,7 @@
           try { navigator.clipboard && navigator.clipboard.writeText(txt).catch(function () {}); } catch (z) {}
           navigator.share({files:[file], text:txt}).catch(function () {});
           tip.style.display = 'block';
-        } else window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+        } else window.open('https://wa.me/?text=' + encodeURIComponent(txt.indexOf(link(code)) >= 0 ? txt : txt + '\n' + link(code)), '_blank');
       };
       if (isMobile() && st2.p && !old) {
         var sms = el('a', 'mng-btn mng-bs', '✉️ أرسلها برسالة نصية'); sms.href = 'sms:?&body=' + encodeURIComponent(smsMsg(st2, pName, code));
@@ -626,7 +633,7 @@
     post({a:'card', c:code}).then(function (r) {
       body.innerHTML = '';
       if (!r || !r.ok) { var e = el('div', 'mng-dua', ERR[r && r.error] || ERR.unavailable); body.appendChild(e); return; }
-      var slug = PROJECTS[r.p] ? r.p : '', pName = PROJECTS[slug] || '';
+      var slug = hasP(r.p) ? r.p : '', pName = PROJECTS[slug] || '';
       if (r.expired) {
         body.appendChild(el('div', 'mng-dua', 'انتهت مدة عرض هذه البطاقة. جزى الله من أهداها خيرًا.'));
       } else {
@@ -658,10 +665,11 @@
     if (saved && Date.now() - saved.ts < KEEP_MS && !already) {
       var h = overlay('شكرًا لتبرعك 🤍', true);
       h.body.appendChild(el('div', 'mng-spin', 'نجهّز بطاقة إهدائك…'));
-      ls('mn_gift_redir', {c:order, ts:Date.now()});
-      try { sessionStorage.setItem('mn_gift_redir', order); } catch (z) {}
-      var t0 = Date.now(), go = function () { location.replace('/#hadiya-complete'); };
-      var w = setInterval(function () { if (Date.now() - t0 > 2800 || (/^\/orders\//.test(location.pathname) && Date.now() - t0 > 1200)) { clearInterval(w); go(); } }, 300);
+      var t0 = Date.now(), gone = false, loaded = document.readyState === 'complete' ? t0 : 0;
+      var go = function () { if (gone) return; gone = true; ls('mn_gift_redir', {c:order, ts:Date.now()}); location.replace('/#hadiya-complete'); };
+      if (!loaded) window.addEventListener('load', function () { loaded = Date.now(); });
+      /* ننتظر اكتمال الصفحة ثم 1.5 ثانية حتى تعمل أكواد قياس الإعلانات، وبحد أقصى 6 ثوانٍ */
+      var w = setInterval(function () { var n = Date.now(); if (n - t0 > 6000 || (loaded && n - loaded > 1500 && n - t0 > 1500)) { clearInterval(w); go(); } }, 250);
       return;
     }
     style();
@@ -674,24 +682,26 @@
   }
 
   /* ===================== التشغيل ===================== */
+  var routed = {};
   function route() {
-    var h = location.hash || '', m;
+    var h = location.hash || '', m, key = location.pathname + h;
+    if (routed[key]) return; routed[key] = 1;
     if ((m = h.match(/^#hadiya=([A-Za-z0-9-]{8,10})$/))) { recipient(m[1].replace(/-/g, '').toUpperCase()); return; }
     if (h === '#hadiya-complete') { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} complete(''); return; }
     var ord = orderFromText(location.pathname);
     if (ord) { thanksPage(ord); return; }
   }
   function boot() {
-    route();
+    try { route(); } catch (e) {}
     var pm = location.pathname.match(/^\/products\/([^\/?#]+)\/?$/), slug = pm && decodeURIComponent(pm[1]);
-    if (slug && PROJECTS[slug]) {
+    if (slug && hasP(slug)) {
       var n = 0; (function tryP() { if (!productPage(slug) && ++n < 20) setTimeout(tryP, 500); })();
     }
     cards();
     var t, mo = new MutationObserver(function () { clearTimeout(t); t = setTimeout(cards, 300); });
     mo.observe(document.body, {childList:true, subtree:true});
     setTimeout(function () { mo.disconnect(); }, 30000);
-    window.addEventListener('hashchange', route);
+    window.addEventListener('hashchange', function () { try { route(); } catch (e) {} });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
