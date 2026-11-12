@@ -3,7 +3,7 @@
    v1 — 2026-11-12
    يُحمَّل من manarat-widgets.js من نفس رقم الـcommit (لا @main).
    يعمل في:
-     1) صفحة المشروع  /products/<slug>        زر + لوحة الإهداء (و #hadiya-open يفتحها)
+     1) صفحة المشروع  /products/<slug>        زر + لوحة الإهداء (و #hadiya-open ينزل إلى الزر واللوحة مغلقة)
      2) بطاقات المشاريع (الرئيسية و /products)  سطر «🎁 أهدِ من تحب» تحت «تبرع الآن»
      3) صفحة الشكر    /order-completed/<رمز>/invoice و /orders/<رمز>/invoice  ← «أكمل هديتك»
         وأي صفحة + #hadiya-complete
@@ -159,8 +159,9 @@
     '.mng-small{font-size:11.5px;color:#667085;text-align:center;margin-top:10px}',
     '.mng-dua{text-align:center;color:' + NAVY + ';font-size:14.5px;margin-top:10px}',
     '.mng-msgbox{white-space:pre-wrap;background:#f8fafc;border:1px solid #eef1f4;border-radius:10px;padding:9px;font-size:13.5px;margin-top:8px}',
-    '.mng-mhead{display:flex;align-items:center;justify-content:space-between;gap:8px}.mng-mhead .mng-l{margin-bottom:5px}',
+    '.mng-mhead{display:flex;align-items:baseline;justify-content:flex-start;gap:10px}.mng-mhead .mng-l{margin-bottom:5px}',
     '.mng button.mng-tog{font:700 12.5px "Almarai",Tahoma,sans-serif!important;color:'+TEALD+'!important;background:none!important;border:0!important;padding:12px 2px 5px!important;cursor:pointer;box-shadow:none!important;width:auto!important;min-height:0!important}',
+    '@keyframes mngp{50%{box-shadow:0 0 0 6px rgba(0,181,167,.35)}}button.mng-open.mng-pulse{animation:mngp 1.2s 3}',
     '.mng-spin{text-align:center;color:' + NAVY + ';padding:30px 0;font-size:15px}',
     /* ثيم إيثار يمسح حدود وخلفيات الأزرار: نثبّتها */
     'button.mng-open,a.mng-cardlink{border:1.5px solid ' + NAVY + '!important;background:#fff!important;color:' + NAVY + '!important;border-radius:999px!important;box-shadow:none!important}',
@@ -263,7 +264,11 @@
     var mIn = el('textarea'); mIn.rows = 3; mIn.maxLength = 300; mBox.appendChild(mIn);
     var mRow = el('div', 'mng-hint'); var mCnt = el('span'); var mRst = el('a', '', ' · إرجاع النص المقترح');
     mRst.href = 'javascript:void 0'; mRst.style.color = TEALD; mRow.appendChild(mCnt); mRow.appendChild(mRst); mBox.appendChild(mRow);
-    var lockL = el('div', 'mng-hint', 'سيُضاف رابط البطاقة تلقائيًا في آخر رسالتك بعد التبرع.'); mBox.appendChild(lockL);
+    var lkL = el('label', 'mng-chk'), lkIn = el('input'); lkIn.type = 'checkbox'; lkIn.checked = !st.noLink;
+    lkL.appendChild(lkIn); lkL.appendChild(document.createTextNode('أضِف رابط البطاقة في آخر الرسالة')); mBox.appendChild(lkL);
+    var lockL = el('div', 'mng-hint'); mBox.appendChild(lockL);
+    var lkTxt = function () { lockL.textContent = st.noLink ? 'لن يُضاف الرابط للرسالة، ويبقى مكتوبًا داخل صورة البطاقة.' : 'سيُضاف رابط البطاقة تلقائيًا في آخر رسالتك بعد التبرع.'; };
+    lkTxt(); lkIn.onchange = function () { st.noLink = !lkIn.checked; lkTxt(); };
     mTog.onclick = function () { st.mOpen = !st.mOpen; mBox.style.display = st.mOpen ? 'block' : 'none'; mTog.textContent = st.mOpen ? 'إخفاء ▴' : 'إظهار ▾'; };
     w.appendChild(el('label', 'mng-l', 'معاينة البطاقة'));
     var pv = el('div'); w.appendChild(pv);
@@ -340,7 +345,7 @@
       }
     };
   }
-  function newState(p) { return {p:p || '', o:0, d:0, th:0, ns:1, fem:false, anon:false, from:'', to:'', msg:'', edited:0, dm:0}; }
+  function newState(p) { return {noLink:false, p:p || '', o:0, d:0, th:0, ns:1, fem:false, anon:false, from:'', to:'', msg:'', edited:0, dm:0}; }
 
   /* ===================== 1) صفحة المشروع ===================== */
   function productPage(slug) {
@@ -421,7 +426,7 @@
       if (scroll) setTimeout(function () { try { wrap.scrollIntoView({behavior:'smooth', block:'start'}); } catch (e) {} }, 300);
     }
     btn.onclick = function () { ev('gift_click'); if (panel.style.display === 'none') open(false); else panel.style.display = 'none'; };
-    if (location.hash === '#hadiya-open') { open(true); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+    if (location.hash === '#hadiya-open') { setTimeout(function () { try { wrap.scrollIntoView({behavior:'smooth', block:'center'}); } catch (e) {} btn.classList.add('mng-pulse'); setTimeout(function () { btn.classList.remove('mng-pulse'); }, 4000); }, 400); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
     return true;
   }
 
@@ -547,7 +552,7 @@
       var res = el('div', 'mng-res'), im = el('img'); im.src = 'data:image/png;base64,' + b64; im.alt = 'بطاقة الإهداء';
       res.appendChild(im); body.appendChild(res);
       var txt = (old || !st2.p) ? 'بطاقة الإهداء: ' + link(code)
-              : ((st2.edited && st2.msg ? st2.msg.trim() : autoMsg(st2, pName)) + '\n' + linkLine(st2, code));
+              : ((st2.edited && st2.msg ? st2.msg.trim() : autoMsg(st2, pName)) + (st2.noLink ? '' : '\n' + linkLine(st2, code)));
       var box = el('div', 'mng-msgbox', txt); body.appendChild(box);
       var file = null; try { file = new File([b64Blob(b64)], 'hadiya-' + code + '.png', {type:'image/png'}); } catch (z) {}
       var wa = el('button', 'mng-btn mng-bw', 'أرسل البطاقة والرسالة في واتساب'); wa.type = 'button'; body.appendChild(wa);
