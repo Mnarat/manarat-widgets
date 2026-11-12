@@ -451,15 +451,19 @@
   }
 
   /* ===================== النافذة العامة ===================== */
-  function overlay(title) {
+  function overlay(title, noClose) {
     style();
-    var ov = el('div', 'mng-ov mng'), box = el('div', 'mng-box'), x = el('button', 'mng-x', '×');
+    var ov = el('div', 'mng-ov mng'), box = el('div', 'mng-box'), x = el('button', 'mng-x', '×'), closed = false;
     x.type = 'button'; x.setAttribute('aria-label', 'إغلاق');
-    x.onclick = function () { ov.remove(); document.documentElement.style.overflow = ''; };
+    var close = function () { closed = true; clearInterval(keep); ov.remove(); document.documentElement.style.overflow = ''; };
+    x.onclick = close; if (noClose) x.style.display = 'none';
     box.appendChild(x); if (title) box.appendChild(el('h3', '', title));
     var body = el('div'); box.appendChild(body); ov.appendChild(box);
-    document.body.appendChild(ov); document.documentElement.style.overflow = 'hidden';
-    return {ov:ov, body:body};
+    var host = document.documentElement;
+    host.appendChild(ov); host.style.overflow = 'hidden';
+    /* صفحات زد تعيد رسم الصفحة أحيانًا فتمسح النافذة: نعيدها ما لم يغلقها الزائر */
+    var keep = setInterval(function () { if (!closed && !ov.isConnected) { host.appendChild(ov); host.style.overflow = 'hidden'; } }, 400);
+    return {ov:ov, body:body, close:close, allowClose:function () { x.style.display = ''; }};
   }
   function b64Blob(b64) {
     var bin = atob(b64), n = bin.length, u = new Uint8Array(n); for (var i = 0; i < n; i++) u[i] = bin.charCodeAt(i);
@@ -484,7 +488,11 @@
   }
   function complete(order) {
     ev('complete_view');
-    var o = overlay('أكمل هديتك'), body = o.body;
+    var o = overlay('أكمل هديتك', true), body = o.body;
+    var later = el('a', '', 'أكمل لاحقًا'); later.href = 'javascript:void 0';
+    later.style.cssText = 'display:block;text-align:center;font-size:12.5px;color:#667085;margin-top:12px';
+    later.onclick = function () { if (window.confirm('يمكنك إكمال الهدية لاحقًا من الرابط: mmcm.sa/#hadiya-complete\nهل تريد الإغلاق الآن؟')) o.close(); };
+    o.ov.firstChild.appendChild(later);
     var saved = ls('mn_gift'), st = newState('');
     var fresh = saved && Date.now() - saved.ts < KEEP_MS;
     if (fresh) for (var k in saved) if (k in st) st[k] = saved[k];
@@ -532,7 +540,7 @@
           .then(function (r) {
             if (r && r.ok && r.code && r.img) {
               var d = ls('mn_gift_done'); if (!d || d.o !== order) d = {o:order, c:[]};
-              d.c.push(r.code); d.ts = Date.now(); ls('mn_gift_done', d); done = d;
+              d.c.push(r.code); d.ts = Date.now(); d.t = d.t || {}; ls('mn_gift_done', d); done = d;
               ls('mn_gift', null);
               result(st, r.code, r.img);
             } else fail(r && r.error);
@@ -556,21 +564,28 @@
       var pName = PROJECTS[st2.p] || '';
       var res = el('div', 'mng-res'), im = el('img'); im.src = 'data:image/png;base64,' + b64; im.alt = 'بطاقة الإهداء';
       res.appendChild(im); body.appendChild(res);
-      var txt = (old || !st2.p) ? 'بطاقة الإهداء: ' + link(code)
-              : ((st2.edited && st2.msg ? st2.msg.trim() : autoMsg(st2, pName)) + (st2.noLink ? '' : '\n' + linkLine(st2, code)));
+      var saved2 = ls('mn_gift_done'), txt;
+      if (old && saved2 && saved2.t && saved2.t[code]) txt = saved2.t[code];
+      else if (st2.p && st2.to) txt = (st2.edited && st2.msg ? st2.msg.trim() : autoMsg(st2, pName)) + (st2.noLink ? '' : '\n' + linkLine(st2, code));
+      else txt = 'أُهديت لك بطاقة خير من جمعية منارات مكة 🤍\n' + link(code);
+      if (!old && saved2 && saved2.o === order) { saved2.t = saved2.t || {}; saved2.t[code] = txt; ls('mn_gift_done', saved2); done = saved2; }
+      o.allowClose(); later.style.display = 'none';
       var box = el('div', 'mng-msgbox', txt); body.appendChild(box);
       var file = null; try { file = new File([b64Blob(b64)], 'hadiya-' + code + '.png', {type:'image/png'}); } catch (z) {}
       var wa = el('button', 'mng-btn mng-bw', 'أرسل البطاقة والرسالة في واتساب'); wa.type = 'button'; body.appendChild(wa);
       wa.onclick = function () {
         ev('sent_whatsapp');
         if (file && navigator.canShare && isMobile() && navigator.canShare({files:[file]})) {
+          try { navigator.clipboard && navigator.clipboard.writeText(txt).catch(function () {}); } catch (z) {}
           navigator.share({files:[file], text:txt}).catch(function () {});
+          tip.style.display = 'block';
         } else window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
       };
       if (isMobile() && st2.p && !old) {
         var sms = el('a', 'mng-btn mng-bs', '✉️ أرسلها برسالة نصية'); sms.href = 'sms:?&body=' + encodeURIComponent(smsMsg(st2, pName, code));
         sms.onclick = function () { ev('sent_sms'); }; body.appendChild(sms);
       }
+      var tip = el('div', 'mng-hint', 'نسخنا نص الرسالة لك. إن وصلت الصورة بلا نص في واتساب، ألصقه في المحادثة.'); tip.style.display = 'none'; tip.style.textAlign = 'center'; wa.parentNode.insertBefore(tip, wa.nextSibling);
       var cp = el('button', 'mng-btn mng-b2', 'نسخ الرسالة'); cp.type = 'button'; body.appendChild(cp);
       cp.onclick = function () {
         ev('copy_msg');
@@ -638,7 +653,17 @@
   function thanksPage(order) {
     ls('mn_gift_ord', {c:order, ts:Date.now()});
     var saved = ls('mn_gift');
-    if (saved && Date.now() - saved.ts < KEEP_MS) { setTimeout(function () { complete(order); }, 600); return; }
+    var dn = ls('mn_gift_done'), red = ls('mn_gift_redir');
+    var already = (dn && dn.o === order) || (red && red.c === order);
+    if (saved && Date.now() - saved.ts < KEEP_MS && !already) {
+      var h = overlay('شكرًا لتبرعك 🤍', true);
+      h.body.appendChild(el('div', 'mng-spin', 'نجهّز بطاقة إهدائك…'));
+      ls('mn_gift_redir', {c:order, ts:Date.now()});
+      try { sessionStorage.setItem('mn_gift_redir', order); } catch (z) {}
+      var t0 = Date.now(), go = function () { location.replace('/#hadiya-complete'); };
+      var w = setInterval(function () { if (Date.now() - t0 > 2800 || (/^\/orders\//.test(location.pathname) && Date.now() - t0 > 1200)) { clearInterval(w); go(); } }, 300);
+      return;
+    }
     style();
     var bar = el('div', 'mng'); bar.style.cssText = 'position:fixed;bottom:14px;left:12px;right:12px;z-index:2147482000;max-width:460px;margin:0 auto';
     var b = el('button', 'mng-btn mng-b1', '🎁 أهدِ أجر تبرعك لمن تحب'); b.type = 'button'; b.style.boxShadow = '0 6px 20px rgba(0,0,0,.2)';
