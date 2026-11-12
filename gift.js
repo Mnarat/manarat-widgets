@@ -253,7 +253,7 @@
     var anL = el('label', 'mng-chk'), anIn = el('input'); anIn.type = 'checkbox'; anIn.checked = !!st.anon;
     anL.appendChild(anIn); anL.appendChild(document.createTextNode('أخفِ اسمي (يظهر «فاعل خير»)')); w.appendChild(anL);
     var tL = el('label', 'mng-l', 'اسم المُهدى إليه'); w.appendChild(tL);
-    var tIn = el('input'); tIn.type = 'text'; tIn.maxLength = 25; tIn.value = st.to || ''; tIn.placeholder = 'مثال: أبو محمد';
+    var tIn = el('input'); tIn.type = 'text'; tIn.maxLength = 25; tIn.value = st.to || ''; tIn.placeholder = 'مثال: أبو تميم';
     w.appendChild(tIn);
     var feL = el('label', 'mng-chk'), feIn = el('input'), feT = el('span'); feIn.type = 'checkbox'; feIn.checked = !!st.fem;
     feL.appendChild(feIn); feL.appendChild(feT); w.appendChild(feL);
