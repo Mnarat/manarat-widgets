@@ -1,5 +1,6 @@
 /* ============================================================
    gift.js — «🎁 أهدِ من تحب» — جمعية منارات مكة (متجر زد mmcm.sa، 3264753)
+   v2.2 — 2026-11-13: نص الكبسولة «أجر مشروع «…» بمكة المكرمة» (وللمتوفى «في مشروع»)، والاسم الطويل يصغر درجة أو درجتين تلقائياً، وبطاقة المتوفى بالأسود والأبيض والفضي (تصميم mourn: غامقة وفاتحة فقط)
    v2.1 — 2026-11-13: ألوان البطاقات الجديدة — كحلي وفيروزي من هوية منارات (الأزرار والنقاط والتحديد وبطاقتا الغامق والفاتح)
    v2.0 — 2026-11-13: إهداء مبسّط — نافذة من 3 خطوات (المناسبة ← الأسماء ← المبلغ)، التصميم وحجم الاسم تلقائيان، نص الواتساب بعد الإصدار، و«تأكد من الأسماء» بعد الدفع
    يُحمَّل من manarat-widgets.js من نفس رقم الـcommit (لا @main).
@@ -47,13 +48,14 @@
     {g:1, l:'عشر ذي الحجة', e:'🕋', s:'عشر ذي الحجة', m:'تقبّل الله منك في خير أيام الدنيا', f:'تقبّل الله منكِ في خير أيام الدنيا', w:'في هالعشر المباركة، حبّيت يكون لك نصيب من صدقتي في بيوت الله. عسى الله يكتب لك أجرها ويتقبّل منّا ومنك.', d:8},
     {g:1, l:'حج أو عمرة', e:'🕋', s:'حج أو عمرة', m:'تقبّل الله طاعتك، وجعل سعيك مشكوراً وذنبك مغفوراً', f:'تقبّل الله طاعتكِ، وجعل سعيكِ مشكوراً وذنبكِ مغفوراً', w:'الحمد لله اللي بلّغك بيته وأتمّ لك نُسكك.. وفرحاً بتمامه أهديتك صدقة في مساجد مكة. تقبّل الله منك.', d:8},
     {g:2, l:'برّ الوالدين', e:'🤲', s:'لوالديّ', m:'برّاً بك، وجزاك الله عني خير الجزاء', f:'برّاً بكِ، وجزاكِ الله عني خير الجزاء', w:'أبي، منك تعلّمت العطاء، ومن أجمل ما أهديك صدقة عنك في بيوت الله. جزاك الله عنّي كل خير.', wf:'أمي، عمري وأنا أفرح بدعواتك، واليوم أهديك مع دعائي صدقة عنك في بيوت الله.', d:13},
-    {g:2, l:'صدقة عن متوفى', e:'🕊️', s:'صدقة عن متوفى', dead:1, m:'رحمه الله، وجعلها في ميزان حسناته', f:'رحمها الله، وجعلها في ميزان حسناتها', w:'غاليكم غالٍ علينا.. وهذي صدقة عنه، الله يرحمه.', wf:'غاليتكم غالية علينا.. وهذي صدقة عنها، الله يرحمها.', d:9},
+    {g:2, l:'صدقة عن متوفى', e:'🕊️', s:'صدقة عن متوفى', dead:1, m:'رحمه الله، وجعلها في ميزان حسناته', f:'رحمها الله، وجعلها في ميزان حسناتها', w:'غاليكم غالٍ علينا.. وهذي صدقة عنه، الله يرحمه.', wf:'غاليتكم غالية علينا.. وهذي صدقة عنها، الله يرحمها.', d:14},
     {g:2, l:'دعاء لمريض بالشفاء', e:'💚', s:'دعاء بالشفاء', m:'نسأل الله أن يشفيك شفاءً لا يغادر سقماً', f:'نسأل الله أن يشفيكِ شفاءً لا يغادر سقماً', w:'طهور إن شاء الله.. تصدّقت عنك، وعسى الله يلبسك ثوب العافية ويقرّ عيوننا بشوفتك بخير.', d:10},
     {g:0, l:'الحمد لله على السلامة', e:'🌿', s:'الحمد لله على السلامة', m:'الحمد لله على سلامتك، وألبسك الله ثوب الصحة والعافية', f:'الحمد لله على سلامتكِ، وألبسكِ الله ثوب الصحة والعافية', w:'الحمد لله على سلامتك.. يوم تطمّنت عليك تصدّقت عنك شكراً لله. عسى أيامك كلها صحة وعافية.', d:10}
   ];
   /* التصاميم: الترتيب يطابق DK في السكربت */
   var DS = [['general','عام'],['boy','مولود'],['wedding','زواج'],['grad','تخرّج'],['home','منزل'],['quran','مصحف'],
-    ['ramadan','رمضان'],['eid','عيد'],['hajj','حج'],['calm','هادئ'],['heal','شفاء'],['girl','مولودة'],['thanks','شكر'],['parents','والدان']];
+    ['ramadan','رمضان'],['eid','عيد'],['hajj','حج'],['calm','هادئ'],['heal','شفاء'],['girl','مولودة'],['thanks','شكر'],['parents','والدان'],
+    ['mourn','عزاء']];   /* 14: بطاقة المتوفى فقط (أسود وأبيض وفضي)، لا تظهر في قائمة التصاميم */
   /* الخطوة 1 تعرض ستة مربعات: عام، لوالديّ، صدقة عن متوفى، دعاء بالشفاء، رمضان، تخرّج. الباقي تحت «مناسبات أخرى» */
   var TOP6 = [0, 14, 15, 16, 9, 3];
   var NS = [5.03, 6.18, 7.09];                 // حجم الاسم بوحدة cqw (صغير/متوسط/كبير)
@@ -69,6 +71,7 @@
   })();
   function toEn(v) { return String(v || '').replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); }).replace(/[^0-9.]/g, ''); }
   function hasP(k) { return !!k && Object.prototype.hasOwnProperty.call(PROJECTS, k); }
+  var MOURN = 14;   /* رقم تصميم المتوفى في DS وفي DK بالسكربت */
   function img(d, th) { return BASE + 'img/gift/' + DS[d][0] + '-' + (th ? 'l' : 'd') + '.jpg'; }
 
   /* ===================== أدوات ===================== */
@@ -131,7 +134,7 @@
     '.mng-card{position:relative;width:100%;aspect-ratio:1748/1240;border-radius:12px;overflow:hidden;container-type:inline-size;background-size:cover;background-position:center;background-color:#03183E}',
     '.mng-card .in{position:absolute;left:21.5%;right:21.5%;top:15.5%;bottom:15.5%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}',
     '.mng-card .k1{font-size:1.95cqw;font-weight:700;display:flex;align-items:center;gap:1.1cqw}.mng-card .k1 i{width:3.9cqw;height:1px;background:currentColor;display:block}',
-    '.mng-card .to{font-weight:800;line-height:1.2;margin:.9cqw 0}',
+    '.mng-card .to{font-weight:800;line-height:1.2;margin:.9cqw 0 2cqw}',   /* فراغ تحت الاسم لذيل الياء (مثل السكربت) */
     '.mng-card .sep{width:12.6cqw;height:1.4cqw;margin-bottom:.4cqw}',
     '.mng-card .msg{font-family:Amiri,serif;font-size:3.2cqw;line-height:1.6;margin-top:1.1cqw;white-space:pre-line}',
     '.mng-card .opp{font-size:2.12cqw;font-weight:700;padding:1.15cqw 3cqw;border-radius:999px;margin-top:2cqw}',
@@ -140,6 +143,13 @@
     '.mng-card.d{color:#fff}.mng-card.d .k1{color:#7FE5DC}.mng-card.d .msg{color:#7FE5DC}.mng-card.d .to{text-shadow:0 .23cqw 1.8cqw rgba(0,15,30,.6)}.mng-card.d .msg{text-shadow:0 .1cqw 1.1cqw rgba(0,20,30,.55)}',
     '.mng-card.d .opp{background:rgba(3,18,44,.30);border:1px solid #00B5A7}.mng-card.d .from{color:rgba(255,255,255,.92)}',
     '.mng-card.l{color:#1C2226}.mng-card.l .k1{color:#052560}.mng-card.l .to{color:#052560}.mng-card.l .msg{color:#3A4247}.mng-card.l .opp{background:#052560;color:#fff;border:1px solid #052560}.mng-card.l .from{color:rgba(28,34,38,.85)}',
+    /* بطاقة المتوفى: أسود وأبيض وفضي */
+    '.mng-card.m.d{background-color:#18191B}.mng-card.m.d .k1{color:#D3D7DC}.mng-card.m.d .msg{color:#E4E7EA}.mng-card.m.d .opp{background:rgba(0,0,0,.35);border:1px solid #C3C8CF;color:#fff}.mng-card.m.d .from{color:#F2F4F5}',
+    '.mng-card.m.l{background-color:#F6F7F8}.mng-card.m.l .k1{color:#666D75}.mng-card.m.l .to{color:#1C2226}.mng-card.m.l .msg{color:#3A4247}.mng-card.m.l .opp{background:#1C2226;border:1px solid #1C2226;color:#fff}.mng-card.m.l .from{color:#3A4247}',
+    '.mng-mrow{display:flex;gap:10px;margin-top:10px}',
+    '.mng button.mng-mb{flex:1;height:auto!important;aspect-ratio:1748/1240;min-height:0!important;padding:0!important;position:relative;border:2.5px solid #dfe5ec!important;border-radius:10px!important;background-size:cover!important;background-position:center!important;cursor:pointer;box-shadow:none!important;overflow:hidden}',
+    '.mng button.mng-mb.on{border-color:' + TEALD + '!important}',
+    '.mng button.mng-mb span{position:absolute;left:0;right:0;bottom:0;color:#fff;background:rgba(5,37,96,.82);font:700 13px/1.7 "Almarai",Tahoma,sans-serif;text-align:center}',
     /* النافذة */
     '.mng-ov{position:fixed;inset:0;z-index:2147483000;background:rgba(5,20,45,.55);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 10px 40px}',
     '.mng-box{max-width:460px;margin:0 auto;background:#fff;border-radius:18px;padding:16px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.25)}',
@@ -239,18 +249,21 @@
   function autoNs(n) { var L = cleanName(n).length; return L <= 9 ? 2 : (L <= 16 ? 1 : 0); }
   function hasF(o) { return !!(o.f || o.wf); }
   function cardPreview(st, pName, barTxt) {
-    var o = OCC[st.o], L = st.th === 1, g = L ? '#052560' : '#7FE5DC';
+    var o = OCC[st.o], L = st.th === 1, M = !!o.dead, g = M ? (L ? '#666D75' : '#D3D7DC') : (L ? '#052560' : '#7FE5DC');
     st.ns = autoNs(st.to);
-    var c = el('div', 'mng-card ' + (L ? 'l' : 'd'));
+    var c = el('div', 'mng-card ' + (L ? 'l' : 'd') + (M ? ' m' : ''));
     c.style.backgroundImage = 'url("' + img(st.d, L) + '")';
     var inn = el('div', 'in');
     var k = el('div', 'k1'); k.appendChild(el('i')); k.appendChild(document.createTextNode(o.dead ? 'صدقة عن' : 'إهداء إلى')); k.appendChild(el('i'));
-    var to = el('div', 'to', cleanName(st.to) || (o.dead ? 'اسم المتوفى' : 'من تحب')); to.style.fontSize = NS[st.ns] + 'cqw';
+    var to = el('div', 'to', cleanName(st.to) || (o.dead ? 'اسم المتوفى' : 'من تحب')); /* الاسم الطويل يصغر تلقائياً درجة أو درجتين حتى يبقى في سطر واحد (مثل السكربت) */
+    var nmTxt = to.textContent, stp = [62, 54, 44, 40, 36], si = stp.indexOf([44, 54, 62][st.ns]), sMx = Math.min(4, si + 2);
+    while (si >= 0 && si < sMx && nmTxt.length * stp[si] * 0.56 > 498) si++;
+    to.style.fontSize = (si >= 0 ? (stp[si] / 8.74).toFixed(2) : NS[st.ns]) + 'cqw';
     var sep = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sep.setAttribute('class', 'sep'); sep.setAttribute('viewBox', '0 0 110 12');
     sep.innerHTML = '<path d="M0 6H44M66 6H110" stroke="' + g + '"/><circle cx="48" cy="6" r="1.6" fill="' + g + '"/><circle cx="62" cy="6" r="1.6" fill="' + g + '"/><path d="M55 0L61 6L55 12L49 6Z" fill="' + g + '"/>';
     inn.appendChild(k); inn.appendChild(to); inn.appendChild(sep);
     inn.appendChild(el('div', 'msg', splitDua(dua(st))));
-    inn.appendChild(el('div', 'opp', '«' + pName + '» لمساجد مكة المكرمة'));
+    inn.appendChild(el('div', 'opp', (o.dead ? 'في مشروع «' : 'أجر مشروع «') + pName + '» بمكة المكرمة'));
     inn.appendChild(el('div', 'from', (o.dead ? 'من: ' : 'مُهداة من: ') + fromName(st)));
     c.appendChild(inn);
     c.appendChild(el('div', 'bar', barTxt || 'معاينة — تظهر البطاقة كاملة بعد إتمام التبرع'));
@@ -323,7 +336,7 @@
       host.appendChild(el('div', 'mng-q', 'ما مناسبة الهدية؟'));
       function pick(i) {
         if (opts.pickProject && !PROJECTS[st.p]) { pe.textContent = 'اختر المشروع الذي تبرعت له.'; pe.style.display = 'block'; try { pe.scrollIntoView({block:'nearest'}); } catch (z) {} return; }
-        st.o = i; if (!st.dm) st.d = OCC[i].d; if (!hasF(OCC[i])) st.fem = false;
+        st.o = i; if (OCC[i].dead) st.d = MOURN; else if (!st.dm || st.d === MOURN) st.d = OCC[i].d; if (!hasF(OCC[i])) st.fem = false;
         picked = true; if (opts.onPick) opts.onPick();
         step = 2; draw();
       }
@@ -417,22 +430,35 @@
       }
       host.appendChild(el('label', 'mng-lab', 'بطاقتك'));
       host.appendChild(cardPreview(st, pName(), 'شكل تقريبي، والبطاقة النهائية بعد التبرع'));
-      var lk = el('button', 'mng-lk', looks ? 'إخفاء ▴' : '🎨 غيّر شكل البطاقة (اختياري)'); lk.type = 'button';
-      lk.onclick = function () { looks = !looks; draw(true); }; host.appendChild(lk);
-      if (looks) {
-        var row = el('div', 'mng-dsrow');
-        DS.forEach(function (d, i) {
-          var b = el('button', 'mng-dsb' + (st.d === i ? ' on' : '')); b.type = 'button';
-          b.style.backgroundImage = 'url("' + img(i, st.th) + '")'; b.appendChild(el('span', '', d[1]));
-          b.onclick = function () { st.d = i; st.dm = 1; draw(true); }; row.appendChild(b);
+      if (OCC[st.o].dead) {
+        /* المتوفى: البطاقتان (غامقة وفاتحة) تظهران تلقائياً، ولا تصاميم ملونة */
+        st.d = MOURN;
+        var mr = el('div', 'mng-mrow');
+        ['غامقة', 'فاتحة'].forEach(function (t, i) {
+          var b = el('button', 'mng-mb' + (st.th === i ? ' on' : '')); b.type = 'button';
+          b.style.backgroundImage = 'url("' + img(MOURN, i) + '")'; b.appendChild(el('span', '', t));
+          b.onclick = function () { st.th = i; draw(true); }; mr.appendChild(b);
         });
-        host.appendChild(row);
-        var seg = el('div', 'mng-seg2');
-        ['🌙 غامقة', '☀️ فاتحة'].forEach(function (t, i) {
-          var b = el('button', 'mng-segb' + (st.th === i ? ' on' : ''), t); b.type = 'button';
-          b.onclick = function () { st.th = i; draw(true); }; seg.appendChild(b);
-        });
-        host.appendChild(seg);
+        host.appendChild(mr);
+      } else {
+        var lk = el('button', 'mng-lk', looks ? 'إخفاء ▴' : '🎨 غيّر شكل البطاقة (اختياري)'); lk.type = 'button';
+        lk.onclick = function () { looks = !looks; draw(true); }; host.appendChild(lk);
+        if (looks) {
+          var row = el('div', 'mng-dsrow');
+          DS.forEach(function (d, i) {
+            if (i === MOURN) return;
+            var b = el('button', 'mng-dsb' + (st.d === i ? ' on' : '')); b.type = 'button';
+            b.style.backgroundImage = 'url("' + img(i, st.th) + '")'; b.appendChild(el('span', '', d[1]));
+            b.onclick = function () { st.d = i; st.dm = 1; draw(true); }; row.appendChild(b);
+          });
+          host.appendChild(row);
+          var seg = el('div', 'mng-seg2');
+          ['🌙 غامقة', '☀️ فاتحة'].forEach(function (t, i) {
+            var b = el('button', 'mng-segb' + (st.th === i ? ' on' : ''), t); b.type = 'button';
+            b.onclick = function () { st.th = i; draw(true); }; seg.appendChild(b);
+          });
+          host.appendChild(seg);
+        }
       }
       upd();
       foot.appendChild(err); foot.appendChild(go); host.appendChild(foot);
@@ -447,6 +473,7 @@
   function fixState(st) {
     if (typeof st.o !== 'number' || !OCC[st.o]) st.o = 0;
     if (typeof st.d !== 'number' || !DS[st.d]) st.d = 0;
+    if (OCC[st.o].dead) st.d = MOURN; else if (st.d === MOURN) st.d = OCC[st.o].d;
     if (st.th !== 1) st.th = 0;
     if (typeof st.ns !== 'number' || !NS[st.ns]) st.ns = 1;
     if (st.p && !hasP(st.p)) st.p = '';
