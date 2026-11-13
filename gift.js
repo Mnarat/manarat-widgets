@@ -144,7 +144,7 @@
     '.mng-card.d .opp{background:rgba(3,18,44,.30);border:1px solid #00B5A7}.mng-card.d .from{color:rgba(255,255,255,.92)}',
     '.mng-card.l{color:#1C2226}.mng-card.l .k1{color:#052560}.mng-card.l .to{color:#052560}.mng-card.l .msg{color:#3A4247}.mng-card.l .opp{background:#052560;color:#fff;border:1px solid #052560}.mng-card.l .from{color:rgba(28,34,38,.85)}',
     /* بطاقة المتوفى: أسود وأبيض وفضي */
-    '.mng-card.m.d{background-color:#18191B}.mng-card.m.d .k1{color:#D3D7DC}.mng-card.m.d .msg{color:#E4E7EA}.mng-card.m.d .opp{background:rgba(0,0,0,.35);border:1px solid #C3C8CF;color:#fff}.mng-card.m.d .from{color:#F2F4F5}',
+    '.mng-card.m.d{background-color:#3C3F43}.mng-card.m.d .k1{color:#D3D7DC}.mng-card.m.d .msg{color:#E4E7EA}.mng-card.m.d .opp{background:rgba(0,0,0,.35);border:1px solid #C3C8CF;color:#fff}.mng-card.m.d .from{color:#F2F4F5}',
     '.mng-card.m.l{background-color:#F6F7F8}.mng-card.m.l .k1{color:#666D75}.mng-card.m.l .to{color:#1C2226}.mng-card.m.l .msg{color:#3A4247}.mng-card.m.l .opp{background:#1C2226;border:1px solid #1C2226;color:#fff}.mng-card.m.l .from{color:#3A4247}',
     '.mng-mrow{display:flex;gap:10px;margin-top:10px}',
     '.mng button.mng-mb{flex:1;height:auto!important;aspect-ratio:1748/1240;min-height:0!important;padding:0!important;position:relative;border:2.5px solid #dfe5ec!important;border-radius:10px!important;background-size:cover!important;background-position:center!important;cursor:pointer;box-shadow:none!important;overflow:hidden}',
