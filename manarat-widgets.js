@@ -110,14 +110,15 @@
 .hm-toast-ic .hm-ic{width:28px;height:28px}\
 @media (prefers-reduced-motion:no-preference){@keyframes hmBeat{0%,100%{transform:scale(1)}25%{transform:scale(1.07)}50%{transform:scale(1)}}.hm-toast-ic .hm-ic-gift g{transform-box:fill-box;transform-origin:center bottom;animation:hmBeat 2.8s ease-in-out infinite}}\
 @media(max-width:600px){.hm-live-item{flex-wrap:wrap}.hm-live-time{width:100%;margin:4px 0 0;text-align:left}}\
-.hm-toast{position:fixed;bottom:24px;left:24px;z-index:99999;direction:rtl;font-family:'+CFG.font+';display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:14px 18px 14px 34px;min-width:300px;max-width:min(420px,calc(100vw - 48px));box-shadow:0 10px 30px rgba(0,0,0,.14);border-right:5px solid '+CFG.color+';transform:translateY(140%);opacity:0;transition:transform .55s cubic-bezier(.2,.9,.3,1.2),opacity .4s}\
+.hm-toast{position:fixed;bottom:24px;left:24px;z-index:99999;direction:rtl;font-family:'+CFG.font+';display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:14px 23px 14px 34px;min-width:300px;max-width:min(420px,calc(100vw - 48px));box-shadow:0 10px 30px rgba(0,0,0,.14);overflow:hidden;transform:translateY(140%);opacity:0;transition:transform .55s cubic-bezier(.2,.9,.3,1.2),opacity .4s}\
 .hm-toast.show{transform:none;opacity:1}\
 .hm-toast-ic{width:48px;height:48px;border-radius:50%;background:#E0F5F3;display:grid;place-items:center;font-size:22px;flex:0 0 48px}\
 .hm-toast-body{flex:1;min-width:0}.hm-toast-t{color:#222;font-size:15px;line-height:1.5;font-weight:500}.hm-toast-t b{color:'+CFG.color+';font-weight:700}\
 .hm-toast-s{color:#8a8a8a;font-size:12px;margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}\
 .hm-toast-x{position:absolute;top:6px;left:8px;border:0;background:none;color:#bbb;font-size:16px;cursor:pointer;padding:2px 6px;line-height:1}\
-.hm-toast-bar{position:absolute;bottom:0;right:0;height:3px;background:'+CFG.color+';width:100%;transform-origin:right;animation:hmBar linear forwards}\
-@keyframes hmBar{from{transform:scaleX(1)}to{transform:scaleX(0)}}\
+.hm-toast-bar{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;box-shadow:inset -5px 0 0 '+CFG.color+';pointer-events:none;-webkit-clip-path:inset(0 0 0 0);clip-path:inset(0 0 0 0);animation:hmBar linear forwards}\
+@keyframes hmBar{from{-webkit-clip-path:inset(0 0 0 0);clip-path:inset(0 0 0 0)}to{-webkit-clip-path:inset(0 0 100% 0);clip-path:inset(0 0 100% 0)}}\
+@media (prefers-reduced-motion:reduce){.hm-toast{transition:opacity .2s;transform:none}.hm-toast-bar{animation:none}}\
 @media(max-width:600px){.hm-toast{left:12px;right:12px;bottom:12px;max-width:none;min-width:0}}';
   document.head.appendChild(el('style', null, css));
 
@@ -176,13 +177,22 @@
   /* أيقونة التبرع: قلب فيروزي فوق كف كحلية (ألوان الهوية). أيقونة الإهداء: نفس هدية «أهدِ من تحب» في gift.js */
   var IC_DON = '<svg class="hm-ic" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 33C32 33 18 24.5 18 15.5C18 10.5 21.8 7 26 7C28.6 7 30.9 8.4 32 10.6C33.1 8.4 35.4 7 38 7C42.2 7 46 10.5 46 15.5C46 24.5 32 33 32 33Z" fill="#00B5A7"/><rect x="5" y="38" width="9" height="19" rx="2.5" fill="#052560"/><path d="M17 40H25C27.6 40 30 40.9 32 42.4L34.2 44H41C43.2 44 45 45.6 45 47.6C45 47.9 45 48.2 44.9 48.5L53.6 44.6C55.7 43.7 58.1 44.6 59 46.6C59.8 48.5 59 50.7 57.2 51.7L41.5 59.6C39.2 60.8 36.5 61 34 60.3L17 55.6Z" fill="#052560"/></svg>';
   var IC_GIFT = '<svg class="hm-ic hm-ic-gift" viewBox="0 0 64 64" aria-hidden="true"><g><rect x="14" y="30" width="36" height="25" rx="4" fill="#E53935"/><rect x="14" y="32" width="36" height="3" fill="#7A1515" fill-opacity=".45"/><rect x="29" y="35" width="6" height="20" fill="#F5B52A"/><rect x="10" y="22" width="44" height="10" rx="3" fill="#C62828"/><rect x="28" y="22" width="8" height="10" fill="#F5B52A"/><path d="M32 22C25 22 17 20 17 14.5C17 10 23 10 26 13.5C29 17 32 22 32 22Z" fill="none" stroke="#F5B52A" stroke-width="3" stroke-linejoin="round"/><path d="M32 22C39 22 47 20 47 14.5C47 10 41 10 38 13.5C35 17 32 22 32 22Z" fill="none" stroke="#F5B52A" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="22" r="4" fill="#F5A300"/></g></svg>';
-  /* صياغة المناسبة بعد «أُهدي تبرّع في «المشروع»». المفتاح = اسم المناسبة كما يرجعه سكربت الإهداء.
+  /* صياغة المناسبة بعد «فاعل خير أهدى تبرّعاً في «المشروع»». المفتاح = اسم المناسبة كما يرجعه سكربت الإهداء.
      ما ليس هنا يُكتب «بمناسبة + الاسم». الفارغ = بلا إضافة. */
   var OCC_SAY = {
     'إهداء عام': '',
+    'مولود جديد': 'فرحاً بمولود جديد',
+    'زواج': 'بمناسبة الزواج',
+    'تخرّج': 'بمناسبة التخرّج',
+    'نجاح وتفوّق': 'بمناسبة النجاح والتفوّق',
+    'حج أو عمرة': 'بمناسبة الحج أو العمرة',
+    'وظيفة أو ترقية': 'بمناسبة وظيفة جديدة أو ترقية',
+    'منزل جديد': 'بمناسبة المنزل الجديد',
+    'رمضان': 'بمناسبة شهر رمضان',
+    'عشر ذي الحجة': 'في عشر ذي الحجة',
     'شكر وتقدير': 'شكراً وتقديراً',
     'برّ الوالدين': 'برّاً بالوالدين',
-    'دعاء لمريض بالشفاء': 'مع دعاء لمريض بالشفاء',
+    'دعاء لمريض بالشفاء': 'مع الدعاء لمريض بالشفاء',
     'الحمد لله على السلامة': 'حمداً لله على السلامة'
   };
   function buildDonations(){
@@ -199,12 +209,12 @@
       if(ua){ if(am!==bm) return bm-am; return dt; } if(dt) return dt; return bm-am; }
     function nm(d){ return CFG.showName && d.name ? d.name : 'فاعل خير'; }
     /* الإهداء: لا نأخذ من المصدر إلا المشروع والمناسبة والوقت. لا أسماء ولا رموز ولا مبالغ (وعد لوحة الإهداء) */
-    function cleanGift(g){ return { t:'gift', project:String(g.project||''), occ:String(g.occ||''), dead:!!g.dead, time:g.time }; }
+    function cleanGift(g){ return { t:'gift', project:String(g.project||''), occ:String(g.occ||''), dead:!!g.dead || String(g.occ||'')==='صدقة عن متوفى', time:g.time }; }
     function giftHtml(d){
       var pr = d.project ? ' في <b>«'+esc(d.project)+'»</b>' : '';
-      if (d.dead) return '<b>صدقة عن متوفى</b>'+pr;
+      if (d.dead) return '<b>فاعل خير</b> تصدّق'+pr+' <span style="white-space:nowrap">عن متوفى</span>';
       var say = Object.prototype.hasOwnProperty.call(OCC_SAY, d.occ) ? OCC_SAY[d.occ] : (d.occ ? 'بمناسبة '+d.occ : '');
-      return '<b>أُهدي تبرّع</b>'+pr+(say ? ' '+esc(say) : '');
+      return '<b>فاعل خير</b> أهدى تبرّعاً'+pr+(say ? ' '+esc(say) : '');
     }
     /* الصدقة عن متوفى تأخذ أيقونة التبرع الهادئة، لا علبة الهدية */
     function avCls(d){ return isGift(d) && !d.dead ? 'hm-av-gift' : 'hm-av-don'; }
