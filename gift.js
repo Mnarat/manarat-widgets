@@ -978,9 +978,10 @@
           /* الأهم أولاً: التبرع. ثم الشكر بإطار، ثم رابطان */
           var d = el('a', 'mng-main', 'تبرّع أنت أيضاً'); d.href = '/products/' + slug;
           d.onclick = function () { ev('recipient_donate'); }; body.appendChild(d);
-          if (!r.expired && r.from && !r.dead) {
-            var t = el('a', 'mng-main thx', 'اشكر ' + r.from + ' في واتساب'); t.insertAdjacentHTML('afterbegin', waIcon('#25D366'));
-            t.href = 'https://wa.me/?text=' + encodeURIComponent('جزاك الله خيراً يا ' + r.from + ' على إهدائي أجر «' + pName + '» لمساجد مكة 💚');
+          /* لا زر شكر للمتوفى، ولا حين يخفي المُهدي اسمه («فاعل خير») — قرار عبدالله 23:27 */
+          if (!r.expired && who && !r.dead) {
+            var t = el('a', 'mng-main thx', 'اشكر ' + who + ' في واتساب'); t.insertAdjacentHTML('afterbegin', waIcon('#25D366'));
+            t.href = 'https://wa.me/?text=' + encodeURIComponent('جزاك الله خيراً يا ' + who + ' على إهدائي أجر «' + pName + '» لمساجد مكة 💚');
             t.target = '_blank'; t.rel = 'noopener'; t.onclick = function () { ev('thank_click'); }; body.appendChild(t);
           }
         }
