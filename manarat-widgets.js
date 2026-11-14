@@ -119,7 +119,8 @@
 .hm-toast-bar{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;box-shadow:inset -5px 0 0 '+CFG.color+';pointer-events:none;-webkit-clip-path:inset(0 0 0 0);clip-path:inset(0 0 0 0);animation:hmBar linear forwards}\
 @keyframes hmBar{from{-webkit-clip-path:inset(0 0 0 0);clip-path:inset(0 0 0 0)}to{-webkit-clip-path:inset(0 0 100% 0);clip-path:inset(0 0 100% 0)}}\
 @media (prefers-reduced-motion:reduce){.hm-toast{transition:opacity .2s;transform:none}.hm-toast-bar{animation:none}}\
-@media(max-width:600px){.hm-toast{left:12px;right:12px;bottom:12px;max-width:none;min-width:0}}';
+@media(max-width:600px){.hm-toast{left:12px;right:12px;bottom:12px;max-width:none;min-width:0}}\
+@media(max-width:820px){.hm-toast{bottom:120px}}';
   document.head.appendChild(el('style', null, css));
 
   /* ===================== 1) صندوق التقييمات ===================== */
@@ -565,5 +566,25 @@
     g.id = 'mn-gift-js'; g.defer = true;
     g.src = me.replace(/manarat-widgets\.js(\?.*)?$/, 'gift.js');
     (document.head || document.documentElement).appendChild(g);
+  } catch (e) {}
+})();
+/* ============================================================
+   MN-WA-FIX — زر واتساب العائم في الثيم: 0555438678 ← 966555438678
+   ============================================================ */
+(function(){
+  try {
+    function fixWa(){
+      try {
+        var els = document.querySelectorAll('.whatsappWrapper a[href], a[href*="whatsapp.com/send"], a[href*="wa.me/"]');
+        for (var i = 0; i < els.length; i++) {
+          var h = els[i].getAttribute('href') || '';
+          if (/phone=0(5\d{8})(?!\d)/.test(h)) els[i].setAttribute('href', h.replace(/phone=0(5\d{8})(?!\d)/, 'phone=966$1'));
+        }
+      } catch (e) {}
+    }
+    fixWa();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fixWa);
+    window.addEventListener('load', fixWa);
+    setTimeout(fixWa, 2000); setTimeout(fixWa, 5000);
   } catch (e) {}
 })();
