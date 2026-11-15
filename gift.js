@@ -345,7 +345,7 @@
     function title() {
       if (step === 1) return 'ما مناسبة الهدية؟';
       if (step === 2) return OCC[st.o].dead ? 'عن مَن تتصدق؟' : 'لمن الهدية؟';
-      return opts.A && opts.A.sh.length ? 'كم تريد أن تتبرع؟' : 'بطاقتك';
+      return opts.A && opts.A.sh.length ? 'اختر مبلغ تبرعك' : 'بطاقتك';
     }
     /* مكان الزر المضغوط (فهارسه من host) حتى يرجع إليه التركيز بعد إعادة الرسم */
     function focusPath() {
@@ -468,7 +468,7 @@
       };
     }
 
-    /* الخطوة 3: كم تريد أن تتبرع؟ */
+    /* الخطوة 3: اختر مبلغ تبرعك */
     function step3() {
       var A = opts.A, sh = A.sh, dead = !!OCC[st.o].dead;
       var foot = el('div', 'mng-stick'), err = el('div', 'mng-err');
@@ -488,7 +488,7 @@
           var ol = el('label', 'mng-lab', 'المبلغ بالريال'); ol.htmlFor = 'mng-oth'; host.appendChild(ol);
           var oi = el('input', 'mng-inp'); oi.id = 'mng-oth'; oi.type = 'text'; oi.inputMode = 'numeric'; oi.setAttribute('dir', 'ltr'); oi.setAttribute('enterkeyhint', 'done');
           oi.value = A.other; oi.style.textAlign = 'left'; oi.setAttribute('aria-describedby', 'mng-oth-hint'); host.appendChild(oi);
-          var oh = el('div', 'mng-hint', A.minV + ' ريال أو أكثر.'); oh.id = 'mng-oth-hint'; host.appendChild(oh);
+          var oh = el('div', 'mng-hint', 'التبرع يبدأ من ' + A.minV + ' ريال أو أكثر'); oh.id = 'mng-oth-hint'; host.appendChild(oh);
           oi.oninput = function () { A.other = oi.value.replace(/[^0-9٠-٩۰-۹]/g, ''); if (oi.value !== A.other) oi.value = A.other; err.style.display = 'none'; upd(); };
         }
       }
@@ -565,7 +565,7 @@
 
     var st = newState(slug), saved = ls('mn_gift'), picked = false, wstep = 1;
     if (saved && saved.p === slug && Date.now() - saved.ts < KEEP_MS) { for (var k in saved) if (k in st) st[k] = saved[k]; fixState(st); picked = true; }
-    var A = {sh:[], pick:0, other:'', minV:1, touched:0, fetched:0};
+    var A = {sh:[], pick:0, other:'', minV:3, touched:0, fetched:0}; /* MN 2026-11-15: زد لا يقبل أقل من 3 ريال */
 
     function shares() {
       return $$('input[name="qnty_choose"]', form).map(function (r) {
@@ -580,7 +580,7 @@
     }
     function go(b, err) {
       var v = amountOf(A), t0 = b.textContent;
-      if (A.sh.length && A.pick < 0 && !(v >= A.minV)) { err.textContent = 'اكتب مبلغاً لا يقل عن ' + A.minV + ' ريال.'; err.style.display = 'block'; return; }
+      if (A.sh.length && A.pick < 0 && !(v >= A.minV)) { err.textContent = 'التبرع يبدأ من ' + A.minV + ' ريال أو أكثر'; err.style.display = 'block'; return; }
       err.style.display = 'none';
       st.ns = autoNs(st.to); if (!hasF(OCC[st.o])) st.fem = false;
       var s = {}; for (var k in st) s[k] = st[k]; s.ts = Date.now(); ls('mn_gift', s);
@@ -602,7 +602,7 @@
       if (!A.fetched) {
         A.fetched = 1;
         fetch('/api/v1/products/' + form.id.replace('product-form-', ''), {headers:{Accept:'application/json'}}).then(function (r) { return r.json(); })
-          .then(function (j) { var p = j && j.data && j.data.product, m = p && +p.min_quantity_per_cart; if (m > 0) A.minV = m; }).catch(function () {});
+          .then(function (j) { var p = j && j.data && j.data.product, pr = (p && p.purchase_restrictions) || {}, m = p && +(pr.min_quantity_per_cart || p.min_quantity_per_cart); if (m > 3) A.minV = m; }).catch(function () {});
       }
       A.sh = shares();
       if (!A.touched || A.pick >= A.sh.length) A.pick = pageIdx(A.sh);
@@ -1049,4 +1049,100 @@
     window.addEventListener('hashchange', function () { try { route(); } catch (e) {} });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+
+/* ============================================================
+   MN-MIN-AMOUNT (2026-11-15، من هامة 94 و95): زد لا يقبل الدفع بأقل من 3 ريال.
+   - زر «تبرع الآن» العادي (صفحة المشروع وبطاقات الرئيسية): يمنع المبلغ الأقل من حد المشروع (أو 3) ويكتب السطر الأحمر.
+   - «التبرع السريع» العائم: أرضية 3 ريال.
+   - إشعار زد «الحد الأدنى لكمية المنتج…» يصير «الحد الأدنى لهذا المشروع N ريال».
+   لا يعمل في /checkout و/payment و/auth.
+   ============================================================ */
+(function () {
+  if (/^\/(checkout|payment|auth)(\/|$)/.test(location.pathname)) return;
+  var MIN_FLOOR = 3, minById = {};
+  function toEn(v) { return String(v || '').replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); }); }
+  function minFor(id, cb) {
+    if (!id) { cb(MIN_FLOOR); return; }
+    if (minById[id]) { cb(minById[id]); return; }
+    fetch('/api/v1/products/' + encodeURIComponent(id), {headers: {Accept: 'application/json'}}).then(function (r) { return r.json(); })
+      .then(function (j) {
+        var p = (j && j.data && j.data.product) || {}, pr = p.purchase_restrictions || {};
+        var m = parseInt(pr.min_quantity_per_cart || p.min_quantity_per_cart, 10);
+        minById[id] = m > MIN_FLOOR ? m : MIN_FLOOR; cb(minById[id]);
+      }, function () { cb(MIN_FLOOR); });
+  }
+  function minText(m) { return 'التبرع يبدأ من ' + m + ' ريال أو أكثر'; }
+  function donateScope(el) {
+    var n = el, i = 0;
+    while (n && n !== document.body && i < 12) {
+      var q = n.querySelector && n.querySelector('input[name="quantity"].qty');
+      var b = n.querySelector && n.querySelector('a.single_add_to_cart_button[onclick]');
+      if (q && b) return {q: q, b: b};
+      n = n.parentNode; i++;
+    }
+    return null;
+  }
+  function scopeId(sc) {
+    var m = (sc.b.getAttribute('onclick') || '').match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+    return m ? m[0] : '';
+  }
+  function minMsg(q, text, at) {
+    var old = q._mnErr;
+    if (!text) {
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+      q._mnErr = null; q.style.removeProperty('border-color'); return;
+    }
+    if (!old) {
+      var anchor = at || (q.closest && q.closest('.btn-atc')) || (q.parentNode && q.parentNode.parentNode);
+      if (!anchor || !anchor.parentNode) return;
+      old = document.createElement('div'); old.className = 'mn-minerr'; old.setAttribute('role', 'alert');
+      old.style.cssText = 'display:block;width:100%;clear:both;margin:8px 4px 0;color:#c62828;font-size:14px;font-weight:600;line-height:1.6;text-align:right;direction:rtl';
+      anchor.parentNode.insertBefore(old, anchor.nextSibling); q._mnErr = old;
+    }
+    old.textContent = text;
+    q.style.setProperty('border-color', '#c62828', 'important');
+  }
+  document.addEventListener('focusin', function (e) {
+    var t = e.target;
+    if (!t || !t.matches || !t.matches('input[name="quantity"].qty')) return;
+    var sc = donateScope(t); if (sc) minFor(scopeId(sc), function () {});
+  });
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t && t.matches && t.matches('input[name="quantity"].qty,#quickDonationInput')) minMsg(t, '');
+  });
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var qb = t && t.closest && t.closest('#quickDonationSubmit');
+    if (qb) {
+      var qi = document.getElementById('quickDonationInput'); if (!qi) return;
+      var qv = parseInt(toEn(qi.value || '').replace(/[^0-9]/g, ''), 10) || 0;
+      if (qv >= MIN_FLOOR) { minMsg(qi, ''); return; }
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      minMsg(qi, minText(MIN_FLOOR), qi); return;
+    }
+    var b = t && t.closest && t.closest('a.single_add_to_cart_button[onclick]'); if (!b) return;
+    var sc = donateScope(b); if (!sc) return;
+    var raw = toEn(sc.q.value || '').replace(/[^0-9]/g, ''); if (!raw) return;
+    var v = parseInt(raw, 10) || 0, m = minById[scopeId(sc)] || MIN_FLOOR;
+    if (v >= m) { minMsg(sc.q, ''); return; }
+    e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    minMsg(sc.q, minText(m));
+    try { sc.q.focus({preventScroll: true}); } catch (x) {}
+  }, true);
+  var tries = 0, ti = setInterval(function () {
+    tries++;
+    var jq = window.jQuery;
+    if (jq && typeof jq.toast === 'function' && !jq.toast._mn) {
+      var orig = jq.toast;
+      var w = function (o) {
+        try { if (o && typeof o.text === 'string') o.text = o.text.replace(/الحد الأدنى لكمية المنتج في الطلب الواحد\s*([0-9٠-٩]+)/, 'الحد الأدنى لهذا المشروع $1 ريال'); } catch (x) {}
+        return orig.apply(this, arguments);
+      };
+      for (var k in orig) if (Object.prototype.hasOwnProperty.call(orig, k)) w[k] = orig[k];
+      w._mn = 1; jq.toast = w;
+    }
+    if ((jq && jq.toast && jq.toast._mn) || tries > 40) clearInterval(ti);
+  }, 250);
 })();
