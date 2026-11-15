@@ -1054,13 +1054,13 @@
 /* ============================================================
    MN-MIN-AMOUNT (2026-11-15، من هامة 94 و95): زد لا يقبل الدفع بأقل من 3 ريال.
    - زر «تبرع الآن» العادي (صفحة المشروع وبطاقات الرئيسية): يمنع المبلغ الأقل من حد المشروع (أو 3) ويكتب السطر الأحمر.
-   - «التبرع السريع» العائم: أرضية 3 ريال.
+   - «التبرع السريع» العائم: أقل تبرع 20 ريالاً (QUICK_MIN، قرار 2026-11-16).
    - إشعار زد «الحد الأدنى لكمية المنتج…» يصير «الحد الأدنى لهذا المشروع N ريال».
    لا يعمل في /checkout و/payment و/auth.
    ============================================================ */
 (function () {
   if (/^\/(checkout|payment|auth)(\/|$)/.test(location.pathname)) return;
-  var MIN_FLOOR = 3, minById = {};
+  var MIN_FLOOR = 3, QUICK_MIN = 20, minById = {};
   function toEn(v) { return String(v || '').replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); }); }
   function minFor(id, cb) {
     if (!id) { cb(MIN_FLOOR); return; }
@@ -1118,9 +1118,9 @@
     if (qb) {
       var qi = document.getElementById('quickDonationInput'); if (!qi) return;
       var qv = parseInt(toEn(qi.value || '').replace(/[^0-9]/g, ''), 10) || 0;
-      if (qv >= MIN_FLOOR) { minMsg(qi, ''); return; }
+      if (qv >= QUICK_MIN) { minMsg(qi, ''); return; }
       e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-      minMsg(qi, minText(MIN_FLOOR), qi); return;
+      minMsg(qi, minText(QUICK_MIN), qi); return;
     }
     var b = t && t.closest && t.closest('a.single_add_to_cart_button[onclick]'); if (!b) return;
     var sc = donateScope(b); if (!sc) return;
