@@ -1,3 +1,5 @@
+/* MN-BLOGS-REDIRECT: /blogs (صفحة زد الفارغة) تذهب إلى الرئيسية؛ صفحات /blogs/... لا تتأثر */
+try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}catch(e){}
 /* ============================================================
    manarat-widgets.js — جمعية منارات مكة للعناية بالمساجد (متجر زد mmcm.sa)
    منقول من hamah-widgets.js (هامة) بإعدادات منارات. ملف واحد يبني:
