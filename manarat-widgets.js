@@ -661,3 +661,97 @@
     setTimeout(fixWa, 2000); setTimeout(fixWa, 5000);
   } catch (e) {}
 })();
+
+/* MN-CART-AUTH-TEXT: تصحيح نصوص السلة وصفحة الدخول لمتجر جمعية منارات مكة - 2026-11-15
+   يبدّل نصوصاً فقط (بدون تغيير الشكل) في مسارات /cart و /auth. */
+(function mnTextFix() {
+  try {
+    var path0 = location.pathname || '';
+    if (path0.indexOf('/cart') !== 0 && path0.indexOf('/auth') !== 0) { return; }
+    if (window.__mnTextFixOn) { return; }
+    window.__mnTextFixOn = true;
+
+    // type: 'eq' = النص كله يطابق، 'in' = جزء من النص
+    var RULES = [
+      { area: '/cart', type: 'eq', from: 'الكمية', to: 'المبلغ' },
+      { area: '/auth', type: 'eq', from: 'الشراء كزائر', to: 'التبرع كزائر' },
+      { area: '/auth', type: 'in', from: 'ادخل معلوماتك للشراء كزائر', to: 'أدخل معلوماتك للتبرع كزائر' },
+      { area: '/auth', type: 'eq', from: 'الاسم كامل', to: 'الاسم الكامل' }
+    ];
+    var ATTRS = ['placeholder', 'aria-label', 'title'];
+    var timer = null;
+
+    function trim(s) { return String(s).replace(/^\s+|\s+$/g, ''); }
+
+    function fixValue(value, area, extra) {
+      var out = value, t = trim(value), i, r;
+      for (i = 0; i < RULES.length; i++) {
+        r = RULES[i];
+        if (r.area !== area) { continue; }
+        if (r.type === 'eq') {
+          if (t === r.from) { out = out.replace(r.from, r.to); }
+        } else if (out.indexOf(r.from) > -1) {
+          out = out.split(r.from).join(r.to);
+        }
+      }
+      if (extra) { out = extra(out); }
+      return out;
+    }
+
+    function fixAuthDesc(s) { return s.replace(/ادناه/g, 'أدناه').replace(/ارسال/g, 'إرسال'); }
+
+    function fixSubtotal(s) { return s.replace(/منتج(?=\s*\d)/g, 'تبرع'); }
+
+    function run() {
+      try {
+        var path = location.pathname || '';
+        var area = path.indexOf('/cart') === 0 ? '/cart' : (path.indexOf('/auth') === 0 ? '/auth' : '');
+        if (!area || !document.body) { return; }
+        var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        var n, p, v, nv, extra;
+        while ((n = w.nextNode())) {
+          p = n.parentNode;
+          if (!p || /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/.test(p.nodeName)) { continue; }
+          v = n.nodeValue;
+          if (!v) { continue; }
+          extra = null;
+          if (area === '/auth' && p.closest && p.closest('p.desc')) { extra = fixAuthDesc; }
+          if (area === '/cart' && v.indexOf('منتج') > -1 && p.parentNode &&
+              (v.indexOf('المجموع الفرعي') > -1 || String(p.parentNode.textContent).indexOf('المجموع الفرعي') > -1)) {
+            extra = fixSubtotal;
+          }
+          nv = fixValue(v, area, extra);
+          if (nv !== v) { n.nodeValue = nv; }
+        }
+        var els = document.querySelectorAll('[placeholder],[aria-label],[title]');
+        var i, j, a, av, nav;
+        for (i = 0; i < els.length; i++) {
+          for (j = 0; j < ATTRS.length; j++) {
+            a = ATTRS[j];
+            av = els[i].getAttribute(a);
+            if (av) {
+              nav = fixValue(av, area, null);
+              if (nav !== av) { els[i].setAttribute(a, nav); }
+            }
+          }
+        }
+        if (area === '/cart' && document.title.indexOf('سلة المشتريات') > -1) {
+          document.title = document.title.replace('سلة المشتريات', 'سلة التبرعات');
+        }
+      } catch (e) {}
+    }
+
+    function schedule() {
+      if (timer) { clearTimeout(timer); }
+      timer = setTimeout(function () { timer = null; run(); }, 80);
+    }
+
+    run();
+    if (window.MutationObserver && document.body) {
+      var mo = new MutationObserver(schedule);
+      mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+      var tt = document.querySelector('title');
+      if (tt) { mo.observe(tt, { childList: true, subtree: true, characterData: true }); }
+    }
+  } catch (e) {}
+})();
