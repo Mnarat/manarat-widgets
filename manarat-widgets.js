@@ -330,21 +330,24 @@ try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}ca
    هذا الجزء ينسخ CSS المنشور من الرئيسية (المصدر الوحيد: سجل CSS في محرر الثيم) ويضيفه للصفحة إن كان ناقصاً. يُحفظ في المتصفح ساعة. */
 (function(){
   var MARK='MN-CARD-LIKE-OLD', KEY='mn_css_sync_v1', TTL=3600000;
-  function hasCurrent(){ var s=document.querySelectorAll('style'); for(var i=0;i<s.length;i++){ if(s[i].id!=='mn-css-sync' && s[i].textContent.indexOf(MARK)>-1) return true; } return false; }
+  /* 2026-11-21: لم يعد وجود العلامة كافياً؛ النسخة المجمّدة قد تحويها وهي ناقصة. الصفحة «محدّثة» فقط إن كان فيها كل أسماء الكتل /* MN-… الموجودة في نسخة الرئيسية. */
+  function pageCss(){ var s=document.querySelectorAll('style'); for(var i=0;i<s.length;i++){ if(s[i].id!=='mn-css-sync' && s[i].textContent.indexOf(MARK)>-1) return s[i].textContent; } return ''; }
+  function marks(css){ var re=/\/\*\s*(MN-[A-Z0-9-]+)/g, m, out={}; while((m=re.exec(css||''))) out[m[1]]=1; return out; }
+  function hasCurrent(ref){ var page=pageCss(); if(!page) return false; if(!ref) return true; var need=marks(ref), have=marks(page); for(var k in need){ if(!have[k]) return false; } return true; }
   function apply(css){ if(!css) return; var el=document.getElementById('mn-css-sync'); if(!el){ el=document.createElement('style'); el.id='mn-css-sync'; } if(el.textContent!==css) el.textContent=css; (document.head||document.documentElement).appendChild(el); }
   function read(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
   function save(css){ try{ localStorage.setItem(KEY, JSON.stringify({t:Date.now(), css:css})); }catch(e){} }
   function refresh(){
     fetch('/', {credentials:'same-origin', cache:'no-store'}).then(function(r){ return r.text(); }).then(function(html){
       var re=/<style[^>]*>([\s\S]*?)<\/style>/g, m;
-      while((m=re.exec(html))){ if(m[1].indexOf(MARK)>-1){ save(m[1]); if(!hasCurrent()) apply(m[1]); return; } }
+      while((m=re.exec(html))){ if(m[1].indexOf(MARK)>-1){ save(m[1]); if(!hasCurrent(m[1])) apply(m[1]); return; } }
     }).catch(function(){});
   }
   function run(){
     if(/^\/(checkout|payment|auth)(\/|$)/.test(location.pathname)) return; /* 2026-11-15: لا مزامنة في صفحة الدفع (كانت تكبّر العناوين) */
-    if(hasCurrent()) return;
+    if(location.pathname==='/'){ var own=pageCss(); if(own) save(own); return; } /* الرئيسية هي المصدر: تحفظ نسختها ولا تجلب شيئاً */
     var c=read();
-    if(c && c.css) apply(c.css);
+    if(c && c.css && !hasCurrent(c.css)) apply(c.css);
     if(!c || !c.css || (Date.now()-c.t)>TTL) refresh();
   }
   if(document.head && document.querySelector('style')) run(); else document.addEventListener('DOMContentLoaded', run);
