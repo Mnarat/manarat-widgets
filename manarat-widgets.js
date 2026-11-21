@@ -779,6 +779,7 @@ try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}ca
     b.style.cssText = 'all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;height:48px;border-radius:' + cs.borderRadius + ';background:#052560;color:#fff;font-family:' + cs.fontFamily + ';font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18);outline-offset:2px';
     b.style.setProperty('font-size', '20px', 'important');
     b.style.setProperty('line-height', '1.3', 'important');
+    b.style.setProperty('padding-bottom', '3px', 'important');
     b.addEventListener('focus', function(){ b.style.outline = '2px solid #052560'; });
     b.addEventListener('blur', function(){ b.style.outline = 'none'; });
     bar.appendChild(b);
