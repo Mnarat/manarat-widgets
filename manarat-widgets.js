@@ -757,3 +757,117 @@ try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}ca
     }
   } catch (e) {}
 })();
+
+/* MN-STICKY-DONATE: on phones, a "تبرع الآن" bar at the bottom of opportunity pages until the real button is on screen. 2026-11-21 */
+(function(){
+  if (!/\/products\/[^\/]+/.test(location.pathname)) return;
+  var mq = window.matchMedia('(max-width:767px)');
+  function start(){
+    var add = document.getElementById('add');
+    if (!add || document.getElementById('mn-sticky-donate')) return;
+    var cs = getComputedStyle(add);
+    var bar = document.createElement('div');
+    bar.id = 'mn-sticky-donate';
+    bar.setAttribute('aria-hidden', 'true');
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.tabIndex = -1;
+    b.textContent = 'تبرع الآن';
+    b.style.cssText = 'all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;height:48px;border-radius:' + cs.borderRadius + ';background:#052560;color:#fff;font-family:' + cs.fontFamily + ';font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18);outline-offset:2px';
+    b.style.setProperty('font-size', '20px', 'important');
+    b.style.setProperty('line-height', '1.3', 'important');
+    b.addEventListener('focus', function(){ b.style.outline = '2px solid #052560'; });
+    b.addEventListener('blur', function(){ b.style.outline = 'none'; });
+    bar.appendChild(b);
+    function place(){
+      var tb = document.querySelector('.kalles_toolbar');
+      var tbh = (tb && tb.offsetHeight) ? Math.max(0, window.innerHeight - tb.getBoundingClientRect().top) : 0;
+      if (tbh > 120) tbh = 0;
+      bar.style.bottom = (tbh + 8) + 'px';
+    }
+    bar.style.cssText = 'position:fixed;z-index:340;right:10px;left:76px;bottom:8px;transform:translateY(160%);opacity:0;transition:transform .35s,opacity .25s;pointer-events:none';
+    document.body.appendChild(bar);
+    b.addEventListener('click', function(){
+      var f = add.closest('form');
+      var form = (f && f.querySelector('.product-shares')) || add;
+      form.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+    var shown = false, last = false;
+    function set(v){
+      v = v && mq.matches;
+      if (v === shown) return;
+      shown = v;
+      if (v) place();
+      bar.style.transform = v ? 'none' : 'translateY(160%)';
+      bar.style.opacity = v ? '1' : '0';
+      bar.style.pointerEvents = v ? 'auto' : 'none';
+      bar.setAttribute('aria-hidden', v ? 'false' : 'true');
+      b.tabIndex = v ? 0 : -1;
+      document.documentElement.classList.toggle('mn-sticky-on', v);
+    }
+    if (mq.addEventListener) mq.addEventListener('change', function(){ set(last); }); else if (mq.addListener) mq.addListener(function(){ set(last); });
+    function check(){
+      last = add.getBoundingClientRect().top > (window.innerHeight - 64);
+      set(last);
+    }
+    var queued = false;
+    function onScroll(){
+      if (queued) return;
+      queued = true;
+      setTimeout(function(){ queued = false; check(); }, 60);
+    }
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onScroll);
+    check();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+/* MN-FOOTER-PAIR: on phones, the "—" of «روابط قد تهمك» or «المساعدة» opens or closes both lists together. 2026-11-21 */
+(function(){
+  function pair(){
+    var c = document.querySelectorAll('.footer__top .row>.col-12');
+    if (c.length < 4) return null;
+    var a = c[1].querySelector('.widget'), b = c[2].querySelector('.widget');
+    return a && b ? [a, b] : null;
+  }
+  var busy = false;
+  document.addEventListener('click', function(e){
+    if (busy || !window.matchMedia('(max-width:767px)').matches) return;
+    var h = e.target.closest && e.target.closest('.footer__top h3.widget-title');
+    if (!h) return;
+    var p = pair(); if (!p) return;
+    var me = h.closest('.widget');
+    var other = me === p[0] ? p[1] : (me === p[1] ? p[0] : null);
+    if (!other) return;
+    setTimeout(function(){
+      var open = me.classList.contains('footer_opened');
+      if (other.classList.contains('footer_opened') !== open){
+        var oh = other.querySelector('h3.widget-title');
+        if (oh){ busy = true; oh.click(); busy = false; }
+      }
+    }, 80);
+  }, true);
+})();
+/* MN-WA-LIFT: on phones, the WhatsApp button moves up when the bottom navy strip reaches it, so it never covers the license line. 2026-11-21 */
+(function(){
+  var mq = window.matchMedia('(max-width:767px)');
+  function check(){
+    var wa = document.querySelector('.whatsappWrapper'), fb = document.querySelector('.footer__bot');
+    if (!wa || !fb) return;
+    if (!mq.matches){ wa.style.transform = ''; return; }
+    var bottomEdge = window.innerHeight - (parseFloat(getComputedStyle(wa).bottom) || 0);
+    var lift = Math.max(0, Math.round(bottomEdge - (fb.getBoundingClientRect().top - 12)));
+    wa.style.transform = lift ? 'translateY(-' + lift + 'px)' : '';
+  }
+  var queued = false;
+  function onScroll(){
+    if (queued) return;
+    queued = true;
+    setTimeout(function(){ queued = false; check(); }, 60);
+  }
+  window.addEventListener('scroll', onScroll, {passive: true});
+  window.addEventListener('resize', onScroll);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', check); else check();
+  window.addEventListener('load', check);
+  setTimeout(check, 2000);
+})();
