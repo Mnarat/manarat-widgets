@@ -1027,21 +1027,33 @@
     if (!/^\/order-completed\//.test(location.pathname)) return;
     var tries = 0;
     (function place() {
-      if (document.querySelector('.mng-thx')) return;
+      if (document.querySelector('.mng-thx,.mng-chn')) return;
       var after = document.querySelector('.mnr-card');                  /* تظهر فقط مع بطاقة الإيصال، أي لتبرع مدفوع */
       if (!after) { if (++tries < 60) setTimeout(place, 250); return; }
-      if (/أكمل إرسال هديتك|أرسل البطاقة/.test(after.textContent || '')) return;   /* مُهدٍ من قبل الدفع */
+      var gifted = /أكمل إرسال هديتك|أرسل البطاقة/.test(after.textContent || '');   /* مُهدٍ من قبل الدفع: لا بطاقة إهداء */
       if (!document.getElementById('mng-thx-css')) {
         var s = el('style'); s.id = 'mng-thx-css';
         s.textContent = '.mng-thx{direction:rtl;text-align:center;background:#fff;border:1px solid #E1E3E3;border-radius:16px;padding:16px;margin:0 0 14px;font-family:inherit}' +
           '.mng-thx p{margin:10px 0 0;font-size:15px;color:#3A4247}' +
+          '.mng-chn{display:flex;gap:12px;align-items:center;direction:rtl;text-align:right;background:#EAF8F7;border:1px solid #CFEDEA;border-radius:16px;padding:14px;margin:0 0 14px;text-decoration:none!important;font-family:inherit}' +
+          '.mng-chn-i{flex:none;width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}' +
+          '.mng-chn-t{flex:1;min-width:0}.mng-chn-t b{display:block;font-size:15px;font-weight:700;color:#052560}.mng-chn-t span{display:block;font-size:14px;color:#3A4247}' +
+          '.mng-chn-b{flex:none;height:38px;padding:0 14px;border-radius:19px;background:#052560;color:#fff!important;font-size:14px;font-weight:700;display:flex;align-items:center}' +
           '.mng-thx button{display:block;width:100%;height:46px;border-radius:12px;border:2px solid #052560;background:#fff;color:#052560;font:inherit;font-size:16px;font-weight:700;cursor:pointer}';
         document.head.appendChild(s);
       }
-      var c = el('div', 'mng-thx'), b = el('button', '', '🎁 أهدِ أجر تبرعك لمن تحب'); b.type = 'button';
-      b.onclick = function () { complete(order); };
-      c.appendChild(b); c.appendChild(el('p', '', 'اكتب اسم من تحب على بطاقة جاهزة، وأرسلها له.'));
-      after.parentNode.insertBefore(c, after.nextSibling);
+      if (!gifted) {
+        var c = el('div', 'mng-thx'), b = el('button', '', '🎁 أهدِ أجر تبرعك لمن تحب'); b.type = 'button';
+        b.onclick = function () { complete(order); };
+        c.appendChild(b); c.appendChild(el('p', '', 'اكتب اسم من تحب على بطاقة جاهزة، وأرسلها له.'));
+        after.parentNode.insertBefore(c, after.nextSibling); after = c;
+      }
+      /* MN-CHANNEL (2026-11-25): بطاقة قناة منارات على واتساب */
+      var ch = el('a', 'mng-chn'); ch.href = 'https:' + '/' + '/whatsapp.com/channel/0029Vb9CIWeKwqSQPqNKRe1e'; ch.target = '_blank'; ch.rel = 'noopener';
+      ch.innerHTML = '<span class="mng-chn-i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008F85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/></svg></span>';
+      var tx = el('span', 'mng-chn-t'); tx.appendChild(el('b', '', 'تابع أخبار مشاريعنا وأثر تبرعك')); tx.appendChild(el('span', '', 'على قناة منارات في واتساب'));
+      ch.appendChild(tx); ch.appendChild(el('span', 'mng-chn-b', 'تابِع'));
+      after.parentNode.insertBefore(ch, after.nextSibling);
     })();
   }
 
