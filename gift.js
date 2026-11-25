@@ -1034,15 +1034,14 @@
       if (!document.getElementById('mng-thx-css')) {
         var s = el('style'); s.id = 'mng-thx-css';
         s.textContent = '.mng-thx{direction:rtl;text-align:center;background:#fff;border:1px solid #E1E3E3;border-radius:16px;padding:16px;margin:0 0 14px;font-family:inherit}' +
-          '.mng-thx h3{margin:0 0 6px;font-size:17px;font-weight:700;color:#052560}.mng-thx p{margin:0 0 12px;font-size:15px;color:#3A4247}' +
+          '.mng-thx p{margin:10px 0 0;font-size:15px;color:#3A4247}' +
           '.mng-thx button{display:block;width:100%;height:46px;border-radius:12px;border:2px solid #052560;background:#fff;color:#052560;font:inherit;font-size:16px;font-weight:700;cursor:pointer}';
         document.head.appendChild(s);
       }
-      var c = el('div', 'mng-thx'), b = el('button', '', 'أهدِ التبرع'); b.type = 'button';
-      c.appendChild(el('h3', '', '🎁 أهدِ أجر تبرعك لمن تحب'));
-      c.appendChild(el('p', '', 'اكتب اسم من تحب على بطاقة جاهزة، وأرسلها له.'));
+      var c = el('div', 'mng-thx'), b = el('button', '', '🎁 أهدِ أجر تبرعك لمن تحب'); b.type = 'button';
       b.onclick = function () { complete(order); };
-      c.appendChild(b); after.parentNode.insertBefore(c, after.nextSibling);
+      c.appendChild(b); c.appendChild(el('p', '', 'اكتب اسم من تحب على بطاقة جاهزة، وأرسلها له.'));
+      after.parentNode.insertBefore(c, after.nextSibling);
     })();
   }
 
