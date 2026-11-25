@@ -440,6 +440,12 @@
       ck.appendChild(ci); ck.appendChild(document.createTextNode('لا تُظهر اسمي (يُكتب «فاعل خير»)')); host.appendChild(ck);
       host.appendChild(el('div', 'mng-cap', 'هكذا تظهر الأسماء على البطاقة'));
       pv = el('div', 'mng-pv'); host.appendChild(pv);
+      var lk2 = el('button', 'mng-lk', looks ? 'إخفاء ▴' : 'غيّر الشكل ▾'); lk2.type = 'button'; lk2.setAttribute('aria-expanded', looks ? 'true' : 'false');
+      lk2.onclick = function () { looks = !looks; draw(true); }; host.appendChild(lk2);
+      if (looks) {
+        if (dead) { var mb2 = el('div'); themeSeg(mb2); host.appendChild(mb2); }
+        else lookPicker(host);
+      }
       if (F) sf(!!st.fem); else rp();
       var foot = el('div', 'mng-stick'), err = el('div', 'mng-err');
       var nx = el('button', 'mng-main', opts.withAmount ? 'التالي: المبلغ' : (opts.doneText || 'التالي')); nx.type = 'button';
@@ -463,9 +469,31 @@
           return;
         }
         hide();
-        if (opts.withAmount) { step = 3; draw(); }
+        if (opts.withAmount) { step = 3; looks = false; draw(); }
         else if (opts.onDone) opts.onDone(nx, err);
       };
+    }
+
+    /* اختيار الشكل: التصاميم ثم «فاتحة / غامقة» (يُستعمل في الخطوتين 2 و3) */
+    function lookPicker(box) {
+      var row = el('div', 'mng-dsrow'); row.style.marginTop = '10px';
+      DS.forEach(function (d, i) {
+        if (i === MOURN) return;
+        var b = el('button', 'mng-dsb' + (st.d === i ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', st.d === i ? 'true' : 'false');
+        b.style.backgroundImage = 'url("' + img(i, st.th) + '")'; b.appendChild(el('span', '', d[1]));
+        b.onclick = function () { st.d = i; st.dm = 1; draw(true); }; row.appendChild(b);
+      });
+      box.appendChild(row);
+      themeSeg(box);
+    }
+    /* «فاتحة» أولاً لأنها التلقائية. القيمة: 1 فاتحة، 0 غامقة */
+    function themeSeg(box) {
+      var seg = el('div', 'mng-seg2');
+      [[1, '☀️ فاتحة'], [0, '🌙 غامقة']].forEach(function (x) {
+        var b = el('button', 'mng-segb' + (st.th === x[0] ? ' on' : ''), x[1]); b.type = 'button'; b.setAttribute('aria-pressed', st.th === x[0] ? 'true' : 'false');
+        b.onclick = function () { st.th = x[0]; draw(true); }; seg.appendChild(b);
+      });
+      box.appendChild(seg);
     }
 
     /* الخطوة 3: اختر مبلغ تبرعك */
@@ -503,7 +531,8 @@
       if (dead) {
         /* المتوفى: البطاقتان (غامقة وفاتحة) ظاهرتان دائماً، ولا تصاميم ملونة */
         var mr = el('div', 'mng-mrow');
-        ['غامقة', 'فاتحة'].forEach(function (t, i) {
+        [[1, 'فاتحة'], [0, 'غامقة']].forEach(function (x) {
+          var i = x[0], t = x[1];
           var b = el('button', 'mng-mb' + (st.th === i ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', st.th === i ? 'true' : 'false');
           b.style.backgroundImage = 'url("' + img(MOURN, i) + '")'; b.appendChild(el('span', '', t));
           b.onclick = function () { st.th = i; draw(true); }; mr.appendChild(b);
@@ -512,22 +541,7 @@
       }
       if (looks) {
         var big = cardPreview(st, pName(), 'شكل تقريبي، والبطاقة النهائية بعد التبرع'); big.style.marginTop = '12px'; host.appendChild(big);
-        if (!dead) {
-          var row = el('div', 'mng-dsrow'); row.style.marginTop = '10px';
-          DS.forEach(function (d, i) {
-            if (i === MOURN) return;
-            var b = el('button', 'mng-dsb' + (st.d === i ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', st.d === i ? 'true' : 'false');
-            b.style.backgroundImage = 'url("' + img(i, st.th) + '")'; b.appendChild(el('span', '', d[1]));
-            b.onclick = function () { st.d = i; st.dm = 1; draw(true); }; row.appendChild(b);
-          });
-          host.appendChild(row);
-          var seg = el('div', 'mng-seg2');
-          ['🌙 غامقة', '☀️ فاتحة'].forEach(function (t, i) {
-            var b = el('button', 'mng-segb' + (st.th === i ? ' on' : ''), t); b.type = 'button'; b.setAttribute('aria-pressed', st.th === i ? 'true' : 'false');
-            b.onclick = function () { st.th = i; draw(true); }; seg.appendChild(b);
-          });
-          host.appendChild(seg);
-        }
+        if (!dead) lookPicker(host);
       }
       upd();
       foot.appendChild(err); foot.appendChild(go);
@@ -538,13 +552,13 @@
     draw();
   }
 
-  function newState(p) { return {noLink:false, p:p || '', o:0, d:0, th:0, ns:1, fem:false, anon:false, from:'', to:'', msg:'', edited:0, dm:0}; }
+  function newState(p) { return {noLink:false, p:p || '', o:0, d:0, th:1, ns:1, fem:false, anon:false, from:'', to:'', msg:'', edited:0, dm:0}; }
   /* اختيارات قديمة محفوظة في المتصفح قد تحمل رقماً خارج القوائم بعد تحديث: نرجعها للقيم الأولى */
   function fixState(st) {
     if (typeof st.o !== 'number' || !OCC[st.o]) st.o = 0;
     if (typeof st.d !== 'number' || !DS[st.d]) st.d = 0;
     if (OCC[st.o].dead) st.d = MOURN; else if (st.d === MOURN) st.d = OCC[st.o].d;
-    if (st.th !== 1) st.th = 0;
+    if (st.th !== 0) st.th = 1;
     if (typeof st.ns !== 'number' || !NS[st.ns]) st.ns = 1;
     if (st.p && !hasP(st.p)) st.p = '';
     return st;
