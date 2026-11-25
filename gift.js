@@ -924,6 +924,10 @@
         var more = el('button', 'mng-lk', 'بطاقة ثانية لشخص آخر (بلا تبرع جديد)'); more.type = 'button';
         more.onclick = function () { start(); }; body.appendChild(more);
       }
+      if (window.MNReceipt && order) {   /* MN-RECEIPT: رابط هادئ للإيصال بعد الإرسال */
+        var rcp = el('button', 'mng-lk', 'إيصال التبرع'); rcp.type = 'button';
+        rcp.onclick = function () { window.MNReceipt.open(order); }; body.appendChild(rcp);
+      }
       body.appendChild(el('div', 'mng-small', 'رابط البطاقة يعمل 90 يوماً، فاحفظ الصورة. · الرمز ' + code.slice(0, 4) + '-' + code.slice(4)));
       o.focusTitle();
     }
@@ -1010,6 +1014,7 @@
     if (saved && Date.now() - saved.ts < KEEP_MS && !already) {
       var h = overlay('شكراً لتبرعك 🤍', true);
       h.body.appendChild(el('div', 'mng-spin', 'نجهّز بطاقة إهدائك…'));
+      if (window.MNReceipt) h.body.appendChild(el('div', 'mng-small', 'إيصالك محفوظ، تجده بعد إرسال الهدية وفي رسالة الواتساب.'));
       var t0 = Date.now(), gone = false, loaded = document.readyState === 'complete' ? t0 : 0;
       var go = function () { if (gone) return; gone = true; ls('mn_gift_redir', {c:order, ts:Date.now()}); location.replace('/#hadiya-complete'); };
       if (!loaded) window.addEventListener('load', function () { loaded = Date.now(); });
@@ -1025,6 +1030,8 @@
     b.onclick = function () { bar.remove(); complete(order); }; x.onclick = function () { bar.remove(); };
     bar.appendChild(b); bar.appendChild(x); document.body.appendChild(bar);
   }
+
+  window.MNGift = {complete: function (o) { complete(o || ''); }};   /* MN-RECEIPT: يفتح «أكمل هديتك» من بطاقة الإيصال */
 
   /* ===================== التشغيل ===================== */
   var routed = {};
