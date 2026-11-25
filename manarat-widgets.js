@@ -921,3 +921,17 @@ try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}ca
     setTimeout(hide, 1500); setTimeout(hide, 4000); setTimeout(hide, 8000);
   } catch (e) {}
 })();
+
+
+/* ============================================================
+   MN-HIDE-MAZEED — يخفي نافذة «اختم شرائك بتبرع» (مزيد بلس، تبرعات لجمعيات أخرى) في صفحة الشكر والفاتورة
+   قرار الجمعية 2026-11-25 حتى يوقفها دعم زد. للإلغاء: احذف هذا الجزء.
+   ============================================================ */
+(function(){
+  try {
+    if (!/^\/(order-completed|orders|o)\//.test(location.pathname)) return;
+    var s = document.createElement('style');
+    s.textContent = '[id^="mazeedplus"]{display:none!important}';
+    (document.head || document.documentElement).appendChild(s);
+  } catch (e) {}
+})();
