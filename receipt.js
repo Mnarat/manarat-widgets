@@ -398,7 +398,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       s.textContent = 'table.order-table td.order-action{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}' +
         'table.order-table td.order-action a.btn,table.order-table td.order-action .mnr-rbtn{box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;gap:6px;width:120px;height:40px!important;margin:6px 0 0!important;padding:0 10px!important;border-radius:10px!important;font-size:15px!important;font-weight:700!important;text-decoration:none!important;line-height:1!important;cursor:pointer}' +
         'table.order-table td.order-action a.btn{background:#fff!important;color:' + NAVY + '!important;border:2px solid ' + NAVY + '!important}' +
-        'table.order-table td.order-action .mnr-rbtn{background:' + NAVY + '!important;color:#fff!important;border:2px solid ' + NAVY + '!important;font-family:inherit}';
+        'table.order-table td.order-action .mnr-rbtn{background:' + NAVY + '!important;color:#fff!important;border:2px solid ' + NAVY + '!important;font-family:inherit}' +
+        /* الجوال: كل تبرع بطاقة، و«بانتظار الدفع» (2026-11-25) */
+        '@media (max-width:767px){table.order-table,table.order-table tbody{display:block!important;width:100%!important;border:0!important}table.order-table tbody tr{display:grid!important;grid-template-columns:1fr auto;grid-template-areas:"num st" "dt tot" "act act";gap:8px 10px;align-items:center;background:#fff;border:1px solid #E1E3E3!important;border-radius:14px;padding:14px!important;margin:0 0 12px!important;box-shadow:0 1px 3px rgba(5,37,96,.06)}table.order-table tbody tr td{display:block!important;width:auto!important;padding:0!important;border:0!important;text-align:right!important}table.order-table td.order-status::before,table.order-table td.order-date::before,table.order-table td.order-total::before,table.order-table td.order-action::before,table.order-table td.order-date::after,table.order-table td.order-total::after{display:none!important;content:none!important}table.order-table td.order-number{grid-area:num;display:flex!important;direction:rtl!important;align-items:center!important;gap:6px;justify-content:flex-start;font-size:16px;font-weight:700}table.order-table td.order-number::before{content:"رقم التبرع"!important;font-weight:400;font-size:13px;color:#3A4247;width:auto!important;min-width:0!important;max-width:none!important;padding:0!important;margin:0!important;text-align:right!important;flex:none!important;position:relative!important;top:-2px!important;line-height:1.2!important;display:block!important}table.order-table td.order-number a{direction:ltr;position:relative;top:1px}table.order-table td.order-status{grid-area:st;justify-self:end;width:max-content!important;min-width:0!important;max-width:none!important;height:26px;display:flex!important;align-items:center;justify-content:center;line-height:1!important;box-sizing:border-box;padding:0 12px .5px!important;font-size:13px!important;font-weight:700;border-radius:999px;text-align:center!important}table.order-table td.mnr-st-ok{background:#CFEDEA;color:#052560}table.order-table td.mnr-st-wait{background:#F1F3F5;color:#3A4247}table.order-table td.order-date{grid-area:dt;font-size:13px;color:#3A4247}table.order-table td.order-total{grid-area:tot;justify-self:end;font-size:17px;font-weight:800;color:#052560}table.order-table td.order-action{grid-area:act;display:flex!important;gap:8px;flex-wrap:nowrap!important;padding-top:4px!important}table.order-table td.order-action a.btn,table.order-table td.order-action .mnr-rbtn{flex:1 1 0;width:auto!important;margin:0!important;height:42px!important}table.order-table td.order-action a.btn{padding:0 10px!important}table.order-table td.order-action .mnr-wait{flex:1 1 0;width:auto!important;margin:0!important;height:42px!important}}table.order-table td.order-action .mnr-wait{box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;width:120px;height:40px;margin:6px 0 0;padding:2px 10px 0;border-radius:10px;background:#F1F3F5;color:#3A4247;font-size:15px;font-weight:700;line-height:1;cursor:default;font-family:inherit}';
       document.head.appendChild(s);
     }
     var fill = function () {
@@ -407,7 +409,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       document.querySelectorAll('table.order-table tbody tr').forEach(function (tr) {
         var st = tr.querySelector('td.order-status');
         if (st && (st.textContent || '').trim() === 'تم التوصيل') st.textContent = 'تم التبرع';
-        if (tr.querySelector('.mnr-rbtn')) return;
+        if (st) { st.classList.remove('mnr-st-ok', 'mnr-st-wait'); st.classList.add((st.textContent || '').trim() === 'تم التبرع' ? 'mnr-st-ok' : 'mnr-st-wait'); }
+        if (tr.querySelector('.mnr-rbtn,.mnr-wait')) return;
         var a = null, as = tr.querySelectorAll('a');
         for (var i = 0; i < as.length; i++) if (/\/invoice/.test(as[i].getAttribute('href') || '')) { a = as[i]; break; }
         var o = a && orderFromPath(a.getAttribute('href'));
@@ -417,6 +420,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         b.querySelector('svg').setAttribute('width', '16'); b.querySelector('svg').setAttribute('height', '16');
         b.onclick = function () { open(o); };
         a.parentNode.appendChild(b);
+        /* تبرع غير مدفوع: «بانتظار الدفع» بدل «الإيصال»؛ إن فشل الطلب يبقى الزر */
+        fetch('/api/v1/orders/' + o + '/invoice', {headers: {Accept: 'application/json'}}).then(function (r) { return r.json(); }).then(function (j) {
+          var od = j && (j.order || (j.data && j.data.order));
+          if (od && String(od.payment_status || '').toLowerCase() !== 'paid' && b.isConnected) { var w = el('span', 'mnr-wait', 'بانتظار الدفع'); b.replaceWith(w); }
+        }).catch(function () {});
       });
     };
     fill(); setTimeout(fill, 800); setTimeout(fill, 2500); setTimeout(fill, 6000);
