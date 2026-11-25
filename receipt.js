@@ -111,7 +111,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       return ff.load().then(function (x) { document.fonts.add(x); });
     });
     var logo = new Promise(function (ok, no) { var i = new Image(); i.crossOrigin = 'anonymous'; i.onload = function () { ok(i); }; i.onerror = no; i.src = BASE + 'img/receipt/logo.png'; });
-    assets = Promise.all([Promise.all(fonts), logo]).then(function (r) { return {logo: r[1]}; });
+    var wm = new Promise(function (ok) { var i = new Image(); i.crossOrigin = 'anonymous'; i.onload = function () { ok(i); }; i.onerror = function () { ok(null); }; i.src = BASE + 'img/receipt/logo-wm.png'; });
+    assets = Promise.all([Promise.all(fonts), logo, wm]).then(function (r) { return {logo: r[1], wm: r[2]}; });
     assets.catch(function () { assets = null; });
     return assets;
   }
@@ -131,12 +132,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   function draw(kind, d, A, scale) {
     var S = kind === 'sq' ? {
       W:1080, H:1080, pad:48, h1:44, org:30, amtTop:4, amtL:32, amtN:92, amtU:42, wTop:2, wSize:30, barT:20, barB:16,
-      rowPad:14, lab:28, val:36, sub:28, duaM:20, dua:34, ln:28, ct:30, ctT:8, ln2T:6, qr:0, hg:44,
-      mihrab:[22,594,300,142.7,85.5,14]
+      rowPad:14, lab:28, val:36, sub:28, duaM:20, dua:34, ln:28, ct:30, ctT:8, ln2T:6, qr:0, hg:44, wmW:620
     } : {
       W:1080, H:1532, pad:88, h1:52, org:30, amtTop:24, amtL:36, amtN:160, amtU:56, wTop:10, wSize:34, barT:28, barB:28,
-      rowPad:18, lab:30, val:40, sub:30, duaM:28, dua:40, ln:28, ct:30, ctT:12, ln2T:12, qr:152, hg:66,
-      mihrab:[22,842.6,380,178.7,105.5,14]
+      rowPad:18, lab:30, val:40, sub:30, duaM:28, dua:40, ln:28, ct:30, ctT:12, ln2T:12, qr:152, hg:66, wmW:760
     };
     scale = scale || 1;
     var cv = document.createElement('canvas'); cv.width = S.W * scale; cv.height = S.H * scale;
@@ -154,13 +153,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     }
     function width(txt, sz, w, fam) { font(sz, w, fam); return c.measureText(txt).width; }
 
-    /* المحراب: قوس علوي خفيف يتلاشى للأسفل */
-    var mh = S.mihrab, g = c.createLinearGradient(0, 0, 0, mh[1]);
-    g.addColorStop(0, 'rgba(5,37,96,0.03)'); g.addColorStop(0.35, 'rgba(5,37,96,0.03)'); g.addColorStop(1, 'rgba(5,37,96,0)');
-    c.strokeStyle = g; c.lineWidth = 2; c.beginPath();
-    c.moveTo(mh[0], mh[1]); c.lineTo(mh[0], mh[2]);
-    c.bezierCurveTo(mh[0], mh[3], 358.7, mh[4], 540, mh[5]);
-    c.bezierCurveTo(721.3, mh[4], S.W - mh[0], mh[3], S.W - mh[0], mh[2]); c.lineTo(S.W - mh[0], mh[1]); c.stroke();
+    /* الشعار خلفية خفيفة في منتصف الإيصال (الفراغ فوقه = الفراغ تحته) */
+    if (A.wm) {
+      var ww = S.wmW, wh = Math.round(A.wm.naturalHeight * ww / A.wm.naturalWidth);
+      c.globalAlpha = 0.04; c.drawImage(A.wm, (S.W - ww) / 2, (S.H - wh) / 2, ww, wh); c.globalAlpha = 1;
+    }
 
     var P = S.pad, W = S.W, y = P;
 
