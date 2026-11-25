@@ -277,7 +277,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       '.mnr-lnk{display:inline-block;margin-top:12px;font-size:15px;font-weight:700;color:' + NAVY + '!important;text-decoration:underline;background:none;border:0;cursor:pointer;font-family:inherit}',
       '.mnr-ov{position:fixed;inset:0;z-index:2147483100;background:rgba(5,37,96,.55);display:flex;align-items:center;justify-content:center;padding:14px;direction:rtl}',
       '.mnr-sh{background:#fff;border-radius:20px;padding:14px;width:100%;max-width:440px;max-height:calc(100vh - 28px);overflow:auto;font-family:inherit;text-align:center}',
-      '.mnr-x{width:34px;height:34px;border-radius:50%;border:0;background:#F2F4F5;color:' + INK2 + ';font-size:18px;cursor:pointer;display:block;margin:0 auto 10px 0}',
+      '.mnr-x{width:34px;height:34px;border-radius:50%;border:0;background:#F2F4F5;color:' + INK2 + ';font-size:18px;line-height:1;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 10px 0}',
       '.mnr-sh img{display:block;width:100%;border-radius:12px;border:1px solid ' + LINE + '}',
       '.mnr-row{display:flex;gap:10px;margin-top:12px}.mnr-row .mnr-btn{height:46px;font-size:16px}',
       '.mnr-note{margin:10px 0 0;font-size:14px;color:' + INK2 + '}',
@@ -290,8 +290,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
   function overlay() {
     style();
-    var ov = el('div', 'mnr-ov'), sh = el('div', 'mnr-sh'), x = el('button', 'mnr-x', '✕');
-    x.type = 'button'; x.setAttribute('aria-label', 'إغلاق'); sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true');
+    var ov = el('div', 'mnr-ov'), sh = el('div', 'mnr-sh'), x = el('button', 'mnr-x');
+    x.type = 'button'; x.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style="display:block"><path d="M2 2L12 12M12 2L2 12" stroke="' + INK2 + '" stroke-width="2" stroke-linecap="round"/></svg>'; x.setAttribute('aria-label', 'إغلاق'); sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true');
     sh.appendChild(x); ov.appendChild(sh); document.body.appendChild(ov);
     function close() { ov.remove(); document.removeEventListener('keydown', esc); }
     function esc(e) { if (e.key === 'Escape') close(); }
@@ -359,10 +359,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var tries = 0;
     (function place() {
       var title = document.querySelector('main.content-container .page-title') || document.querySelector('.z-order-invoice-view .page-title');
+      if (!title) { var h1 = document.querySelector('.order-completed-content h1'); if (h1) title = h1.closest('.d-flex') || h1; }   /* صفحة الشكر بعد الدفع */
       if (!title) { if (++tries < 40) setTimeout(place, 250); return; }
       if (document.querySelector('.mnr-card')) return;
       getReceipt(order).then(function (d) {
         if (!d || !d.ok) return;               // غير مدفوع أو خطأ: لا نعرض شيئاً
+        if (document.querySelector('.mnr-card')) return;
         style();
         var cd = el('div', 'mnr-card'), b = el('button', 'mnr-btn'), l = el('button', 'mnr-lnk', 'تحقق من الإيصال');
         cd.appendChild(el('p', '', 'إيصال تبرعك جاهز'));

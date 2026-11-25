@@ -178,7 +178,7 @@
     '.mng .mng-b2{background:#fff!important;color:' + NAVY + '!important;border:1.5px solid ' + NAVY + '!important}',
     '.mng .mng-bw{background:#25D366!important;color:#073b1d!important;border:0!important}',
     '.mng .mng-bs{background:#fff!important;color:#075E54!important;border:1.5px solid #25D366!important}',
-    '.mng button.mng-x{background:#EAF8F7!important;color:' + NAVY + '!important;border:0!important;border-radius:50%!important;padding:0!important;width:44px!important;height:44px!important;line-height:44px!important;min-height:0!important}',
+    '.mng button.mng-x{background:#EAF8F7!important;color:' + NAVY + '!important;border:0!important;border-radius:50%!important;padding:0!important;width:44px!important;height:44px!important;line-height:44px!important;min-height:0!important;display:flex!important;align-items:center;justify-content:center}',
     /* أيقونة الهدية داخل الزر ورابط البطاقات: يمين النص، ولا تغيّر ارتفاع الزر (الأيقونة أقصر من سطر النص) */
     'button.mng-open,a.mng-cardlink{display:flex!important;align-items:center;justify-content:center;gap:8px;direction:rtl}',
     '.mng-ic{width:30px!important;height:30px!important;flex:0 0 auto;display:block;overflow:visible}',
@@ -638,7 +638,8 @@
   var dlgN = 0;
   function overlay(title, noClose, sheet) {
     style();
-    var ov = el('div', 'mng-ov mng' + (sheet ? ' mng-sheet' : '')), box = el('div', 'mng-box'), x = el('button', 'mng-x', '×'), closed = false;
+    var ov = el('div', 'mng-ov mng' + (sheet ? ' mng-sheet' : '')), box = el('div', 'mng-box'), x = el('button', 'mng-x'), closed = false;
+    x.innerHTML = '<svg width="16" height="16" viewBox="0 0 14 14" aria-hidden="true" style="display:block;margin:auto"><path d="M2 2L12 12M12 2L2 12" stroke="' + NAVY + '" stroke-width="2" stroke-linecap="round"/></svg>';
     var opener = document.activeElement;
     x.type = 'button'; x.setAttribute('aria-label', 'إغلاق');
     box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
@@ -1022,13 +1023,27 @@
       var w = setInterval(function () { var n = Date.now(); if (n - t0 > 6000 || (loaded && n - loaded > 1500 && n - t0 > 1500)) { clearInterval(w); go(); } }, 250);
       return;
     }
-    style();
-    var bar = el('div', 'mng'); bar.style.cssText = 'position:fixed;bottom:14px;left:12px;right:12px;z-index:2147482000;max-width:460px;margin:0 auto';
-    var b = el('button', 'mng-btn mng-b1', '🎁 أهدِ أجر تبرعك لمن تحب'); b.type = 'button'; b.style.boxShadow = '0 6px 20px rgba(0,0,0,.2)';
-    var x = el('button', '', '×'); x.type = 'button';
-    x.style.cssText = 'position:absolute;top:2px;left:-4px;width:26px;height:26px;border-radius:50%;border:0;background:#fff;color:#344054;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer;font-size:16px;line-height:26px;padding:0';
-    b.onclick = function () { bar.remove(); complete(order); }; x.onclick = function () { bar.remove(); };
-    bar.appendChild(b); bar.appendChild(x); document.body.appendChild(bar);
+    /* MN-THANKS (2026-11-25): بدل الشريط الثابت، بطاقة داخل صفحة الشكر الأولى فقط تحت بطاقة الإيصال. لا تظهر في الفاتورة. */
+    if (!/^\/order-completed\//.test(location.pathname)) return;
+    var tries = 0;
+    (function place() {
+      if (document.querySelector('.mng-thx')) return;
+      var after = document.querySelector('.mnr-card');                  /* تظهر فقط مع بطاقة الإيصال، أي لتبرع مدفوع */
+      if (!after) { if (++tries < 60) setTimeout(place, 250); return; }
+      if (/أكمل إرسال هديتك|أرسل البطاقة/.test(after.textContent || '')) return;   /* مُهدٍ من قبل الدفع */
+      if (!document.getElementById('mng-thx-css')) {
+        var s = el('style'); s.id = 'mng-thx-css';
+        s.textContent = '.mng-thx{direction:rtl;text-align:center;background:#fff;border:1px solid #E1E3E3;border-radius:16px;padding:16px;margin:0 0 14px;font-family:inherit}' +
+          '.mng-thx h3{margin:0 0 6px;font-size:17px;font-weight:700;color:#052560}.mng-thx p{margin:0 0 12px;font-size:15px;color:#3A4247}' +
+          '.mng-thx button{display:block;width:100%;height:46px;border-radius:12px;border:2px solid #052560;background:#fff;color:#052560;font:inherit;font-size:16px;font-weight:700;cursor:pointer}';
+        document.head.appendChild(s);
+      }
+      var c = el('div', 'mng-thx'), b = el('button', '', 'أهدِ التبرع'); b.type = 'button';
+      c.appendChild(el('h3', '', '🎁 أهدِ أجر تبرعك لمن تحب'));
+      c.appendChild(el('p', '', 'اكتب اسم من تحب على بطاقة جاهزة، وأرسلها له.'));
+      b.onclick = function () { complete(order); };
+      c.appendChild(b); after.parentNode.insertBefore(c, after.nextSibling);
+    })();
   }
 
   window.MNGift = {complete: function (o) { complete(o || ''); }};   /* MN-RECEIPT: يفتح «أكمل هديتك» من بطاقة الإيصال */

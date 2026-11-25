@@ -894,3 +894,29 @@ try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}ca
   window.addEventListener('load', check);
   setTimeout(check, 2000);
 })();
+
+/* ============================================================
+   MN-HIDE-ZID — يخفي «صنع بواسطة زد» وشريطه الرمادي في صفحات الدخول والدفع والشكر والفاتورة
+   طلب الجمعية 2026-11-25. للإلغاء: احذف هذا الجزء.
+   ============================================================ */
+(function(){
+  try {
+    var s = document.createElement('style');
+    s.textContent = 'a.footer-marketing-link{display:none!important}';
+    (document.head || document.documentElement).appendChild(s);
+    var extra = function (p, a) {   /* هل في الأب صورة أو حقل أو زر خارج رابط زد؟ */
+      var x = p.querySelectorAll('img,svg,input,button,select,iframe');
+      for (var i = 0; i < x.length; i++) if (!a.contains(x[i])) return true;
+      return false;
+    };
+    var hide = function () {
+      document.querySelectorAll('a.footer-marketing-link').forEach(function (a) {
+        var e = a, t = (a.textContent || '').trim(), n = 0;   /* حتى 6 مستويات */
+        while (t && n < 6 && e.parentElement && e.parentElement !== document.body && (e.parentElement.textContent || '').trim() === t && !extra(e.parentElement, a)) { e = e.parentElement; n++; }
+        e.style.setProperty('display', 'none', 'important');
+      });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide); else hide();
+    setTimeout(hide, 1500); setTimeout(hide, 4000); setTimeout(hide, 8000);
+  } catch (e) {}
+})();
