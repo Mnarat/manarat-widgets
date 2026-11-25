@@ -212,7 +212,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     rows.forEach(function (row) {
       var top = y + S.rowPad, hMax = 0, one = row.length === 1;
       row.forEach(function (cell, i) {
-        var x = one ? W / 2 : (i === 0 ? xR : xL), al = one ? 'center' : 'right', h = 0;
+        var x = one ? W / 2 : (i === 0 ? xR : P), al = one ? "center" : (i === 0 ? "right" : "left"), h = 0;
         h += line(cell[0], x, top + h, S.lab, 400, INK2, 1.2, al);
         h += 9; h += line(fit(cell[1], S.val, 800, one ? W - 2 * P : colW), x, top + h, S.val, 800, NAVY, 1.25, al);
         if (cell[2]) { h += 5; h += line(cell[2], x, top + h, S.sub, 400, INK2, 1.25, al); }
