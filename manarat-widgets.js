@@ -655,7 +655,8 @@ try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}ca
   try {
     if (document.getElementById('mn-receipt-js')) return;
     var p = location.pathname, h = location.hash || '';
-    if (!/^\/(o\/[A-Za-z0-9]{6,24}\/inv|(order-completed|orders)\/[A-Za-z0-9]{6,24}\/invoice)/.test(p) && h.indexOf('#receipt=') !== 0 && !/^\/(order-completed|orders)\//.test(p) && h !== '#hadiya-complete') return;
+    if (h === '#iysali') { location.replace('/account-orders'); return; }   /* «إيصالي»: صفحة طلباتي في زد */
+    if (!/^\/(o\/[A-Za-z0-9]{6,24}\/inv|(order-completed|orders)\/[A-Za-z0-9]{6,24}\/invoice)/.test(p) && h.indexOf('#receipt=') !== 0 && !/^\/(order-completed|orders)\//.test(p) && h !== '#hadiya-complete' && p !== '/account-orders') return;
     var me = document.currentScript && document.currentScript.src;
     if (!me) { var s = document.querySelector('script[src*="manarat-widgets.js"]'); me = s && s.src; }
     if (!me || me.indexOf('manarat-widgets.js') < 0) return;

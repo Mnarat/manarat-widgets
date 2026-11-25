@@ -274,7 +274,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       '.mnr-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:48px;border:0;border-radius:12px;background:' + NAVY + ';color:#fff!important;font:inherit;font-size:17px;font-weight:700;cursor:pointer}',
       '.mnr-btn[disabled]{opacity:.65;cursor:wait}',
       '.mnr-btn2{background:#fff;color:' + NAVY + '!important;border:2px solid ' + NAVY + '}',
-      '.mnr-lnk{display:inline-block;margin-top:12px;font-size:15px;font-weight:700;color:' + NAVY + '!important;text-decoration:underline;background:none;border:0;cursor:pointer;font-family:inherit}',
+      '.mnr-lnk{display:inline-block;margin-top:12px;font-size:15px;font-weight:700;color:' + NAVY + '!important;text-decoration:none!important;background:none;border:0;cursor:pointer;font-family:inherit}',
       '.mnr-ov{position:fixed;inset:0;z-index:2147483100;background:rgba(5,37,96,.55);display:flex;align-items:center;justify-content:center;padding:14px;direction:rtl}',
       '.mnr-sh{background:#fff;border-radius:20px;padding:14px;width:100%;max-width:440px;max-height:calc(100vh - 28px);overflow:auto;font-family:inherit;text-align:center}',
       '.mnr-x{width:34px;height:34px;border-radius:50%;border:0;background:#F2F4F5;color:' + INK2 + ';font-size:18px;line-height:1;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 10px 0}',
@@ -386,8 +386,41 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   function route() {
     var h = location.hash || '', m = h.match(/^#receipt=([A-Za-z0-9]{4}-?[A-Za-z0-9]{4})$/);
     if (m) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} verifyPage(m[1].replace('-', '').toUpperCase()); return; }
+    if (location.pathname === '/account-orders') { ordersPage(); return; }
     var ord = orderFromPath(location.pathname);
     if (ord) card(ord);
+  }
+
+  /* «طلباتي وإيصالاتي»: زر «الإيصال» بجانب «مشاهدة» في كل تبرع (2026-11-25) */
+  function ordersPage() {
+    if (!document.getElementById('mnr-orders-css')) {
+      var s = el('style'); s.id = 'mnr-orders-css';
+      s.textContent = 'table.order-table td.order-action{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}' +
+        'table.order-table td.order-action a.btn,table.order-table td.order-action .mnr-rbtn{box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;gap:6px;width:120px;height:40px!important;margin:6px 0 0!important;padding:0 10px!important;border-radius:10px!important;font-size:15px!important;font-weight:700!important;text-decoration:none!important;line-height:1!important;cursor:pointer}' +
+        'table.order-table td.order-action a.btn{background:#fff!important;color:' + NAVY + '!important;border:2px solid ' + NAVY + '!important}' +
+        'table.order-table td.order-action .mnr-rbtn{background:' + NAVY + '!important;color:#fff!important;border:2px solid ' + NAVY + '!important;font-family:inherit}';
+      document.head.appendChild(s);
+    }
+    var fill = function () {
+      var h1 = document.querySelector('h1');
+      if (h1 && (h1.textContent || '').trim() === 'طلباتي') h1.textContent = 'طلباتي وإيصالاتي';
+      document.querySelectorAll('table.order-table tbody tr').forEach(function (tr) {
+        var st = tr.querySelector('td.order-status');
+        if (st && (st.textContent || '').trim() === 'تم التوصيل') st.textContent = 'تم التبرع';
+        if (tr.querySelector('.mnr-rbtn')) return;
+        var a = null, as = tr.querySelectorAll('a');
+        for (var i = 0; i < as.length; i++) if (/\/invoice/.test(as[i].getAttribute('href') || '')) { a = as[i]; break; }
+        var o = a && orderFromPath(a.getAttribute('href'));
+        if (!o) return;
+        var b = el('button', 'mnr-rbtn'); b.type = 'button';
+        b.appendChild(icon()); b.appendChild(document.createTextNode('الإيصال'));
+        b.querySelector('svg').setAttribute('width', '16'); b.querySelector('svg').setAttribute('height', '16');
+        b.onclick = function () { open(o); };
+        a.parentNode.appendChild(b);
+      });
+    };
+    fill(); setTimeout(fill, 800); setTimeout(fill, 2500); setTimeout(fill, 6000);
+    var tm = 0; try { new MutationObserver(function () { clearTimeout(tm); tm = setTimeout(fill, 150); }).observe(document.body, {childList: true, subtree: true}); } catch (e) {}
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', route); else route();
   window.addEventListener('hashchange', route);
