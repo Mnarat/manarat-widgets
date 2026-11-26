@@ -22,7 +22,7 @@
       r.src = base + 'receipt.js';
       (document.head || document.documentElement).appendChild(r);
     }
-    if (!isOrders) return;
+    if (!isOrders) { document.documentElement.classList.add('mn-ord-ok'); return; }
 
     /* 2) «طلباتي وإيصالاتي» فوراً */
     var ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>';
