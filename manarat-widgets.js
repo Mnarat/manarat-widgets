@@ -960,7 +960,7 @@ try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}ca
 (function(){
   try {
     if (location.pathname !== '/' && location.pathname !== '') return;
-    var LOGO = 'https://media.zid.store/a2f4b88d-f369-41a4-b2cf-f6e32a5a68b9/57500555-9cfa-46f4-aa5f-5040ce37009d.png';
+    var LOGO = 'https://media.zid.store/a2f4b88d-f369-41a4-b2cf-f6e32a5a68b9/add2960e-02ad-4c76-bd4b-02bf85b5ff19.png';
     if (!document.getElementById('mn-website-ld')) {
       var s = document.createElement('script');
       s.type = 'application/ld+json';
