@@ -359,21 +359,36 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       if (!title) { var h1 = document.querySelector('.order-completed-content h1'); if (h1) title = h1.closest('.d-flex') || h1; }   /* صفحة الشكر بعد الدفع */
       if (!title) { if (++tries < 40) setTimeout(place, 250); return; }
       if (document.querySelector('.mnr-card')) return;
-      getReceipt(order).then(function (d) {
-        if (!d || !d.ok) return;               // غير مدفوع أو خطأ: لا نعرض شيئاً
-        if (document.querySelector('.mnr-card')) return;
-        style();
-        var cd = el('div', 'mnr-card'), b = el('button', 'mnr-btn'), l = el('button', 'mnr-lnk', 'تحقق من الإيصال');
+      /* MN-RECEIPTS-FAST (2026-11-26): نعرض البطاقة حين يقول زد «مدفوع» (سريع، من نفس الموقع)،
+         ولا ننتظر سكربت قوقل (2 إلى 5 ثوانٍ). روابط التحقق والإهداء تُضاف حين يصل ردّه. */
+      style();
+      var cd = null, gotR = false;
+      function build() {
+        if (cd || document.querySelector('.mnr-card')) return;
+        cd = el('div', 'mnr-card'); var b = el('button', 'mnr-btn');
         cd.appendChild(el('p', '', 'إيصال تبرعك جاهز'));
-        b.type = l.type = 'button'; b.appendChild(icon()); b.appendChild(document.createTextNode('تحميل الإيصال'));
-        b.onclick = function () { open(order); }; l.onclick = function () { verifyPage(d.v); };
-        cd.appendChild(b); cd.appendChild(l);
+        b.type = 'button'; b.appendChild(icon()); b.appendChild(document.createTextNode('تحميل الإيصال'));
+        b.onclick = function () { open(order); };
+        cd.appendChild(b);
+        title.parentNode.insertBefore(cd, title.nextSibling);
+        loadAssets();                           // نجهّز الخطوط مبكراً
+      }
+      /* صفحة الشكر الأولى تبقى كما هي: gift.js يقرأ رابط الإهداء من البطاقة فلا نضعها قبل رد قوقل */
+      if (!/^\/order-completed\//.test(location.pathname)) fetch('/api/v1/orders/' + encodeURIComponent(order) + '/invoice', {credentials: 'same-origin', headers: {Accept: 'application/json'}})
+        .then(function (r) { return r.json(); }).then(function (j) {
+          var od = j && (j.order || (j.data && j.data.order));
+          if (!gotR && od && String(od.payment_status || '').toLowerCase() === 'paid') build();
+        }).catch(function () {});
+      getReceipt(order).then(function (d) {
+        gotR = true;
+        if (!d || !d.ok) { if (cd) { cd.remove(); cd = null; } return; }   // غير مدفوع أو متوقف: لا نعرض شيئاً
+        build(); if (!cd) return;
+        var l = el('button', 'mnr-lnk', 'تحقق من الإيصال'); l.type = 'button';
+        l.onclick = function () { verifyPage(d.v); }; cd.appendChild(l);
         if (d.gift && d.gift.to && window.MNGift) {   // للمُهدي: رجوع لبطاقة الإهداء
           var gl = el('button', 'mnr-lnk', d.gift.mourn ? 'أرسل البطاقة' : 'أكمل إرسال هديتك'); gl.type = 'button';
           gl.style.marginInlineStart = '16px'; gl.onclick = function () { window.MNGift.complete(order); }; cd.appendChild(gl);
         }
-        title.parentNode.insertBefore(cd, title.nextSibling);
-        loadAssets();                           // نجهّز الخطوط مبكراً
       }).catch(function () {});
     })();
   }
