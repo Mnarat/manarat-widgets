@@ -955,3 +955,36 @@ try{if(/^\/(ar\/)?blogs\/?$/.test(location.pathname)){location.replace('/');}}ca
     window.addEventListener('hashchange', set);
   } catch (e) {}
 })();
+
+/* MN-SITE-NAME: اسم الموقع وأيقونته في قوقل — الرئيسية فقط */
+(function(){
+  try {
+    if (location.pathname !== '/' && location.pathname !== '') return;
+    var LOGO = 'https://media.zid.store/a2f4b88d-f369-41a4-b2cf-f6e32a5a68b9/57500555-9cfa-46f4-aa5f-5040ce37009d.png';
+    if (!document.getElementById('mn-website-ld')) {
+      var s = document.createElement('script');
+      s.type = 'application/ld+json';
+      s.id = 'mn-website-ld';
+      s.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": "https://mmcm.sa/#website",
+        "name": "جمعية منارات مكة للعناية بالمساجد",
+        "alternateName": ["جمعية منارات مكة", "منارات مكة للعناية بالمساجد", "منارات مكة", "mmcm.sa", "جمعية منارات"],
+        "url": "https://mmcm.sa/",
+        "inLanguage": "ar"
+      });
+      document.head.appendChild(s);
+    }
+    var ss = document.querySelectorAll('script[type="application/ld+json"]');
+    for (var i = 0; i < ss.length; i++) {
+      var d;
+      try { d = JSON.parse(ss[i].textContent); } catch (e) { continue; }
+      if (d && d['@type'] === 'Organization') {
+        d.logo = LOGO;
+        d.alternateName = ["جمعية منارات مكة للعناية بالمساجد", "جمعية منارات مكة"];
+        ss[i].textContent = JSON.stringify(d);
+      }
+    }
+  } catch (e) {}
+})();
